@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The UI is built with Compose, so the platform theme only has to remove
+         the action bar and provide the window background before the first frame. -->
+    <style name="Theme.Overload" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

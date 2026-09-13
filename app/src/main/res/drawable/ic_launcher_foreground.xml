@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A barbell, drawn inside the 72dp safe zone of the 108dp adaptive icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,51h40v6h-40z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M26,42h8v24h-8z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,42h8v24h-8z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,48h4v12h-4z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M84,48h4v12h-4z" />
+</vector>

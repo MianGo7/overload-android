@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <!-- Excluded from cloud backup, included in a direct device to device
+         transfer, so that switching phones keeps the log without pushing
+         personal training data to a remote backup. -->
+    <cloud-backup>
+        <exclude domain="database" path="overload.db" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="overload.db" />
+    </device-transfer>
+</data-extraction-rules>

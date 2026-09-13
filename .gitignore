@@ -1,0 +1,33 @@
+# Gradle
+.gradle/
+build/
+/app/build/
+/captures/
+.cxx/
+.externalNativeBuild/
+
+# Android Studio and IntelliJ
+*.iml
+.idea/
+!.idea/codeStyles/
+local.properties
+
+# Build outputs and signing material, never commit these
+*.apk
+*.aab
+*.ap_
+*.dex
+*.keystore
+*.jks
+/app/release/
+
+# Kotlin
+.kotlin/
+
+# Local only notes, for example the paraphrased examination context.
+# IU objects to its examination tasks being republished, so these stay off
+# the remote. Removing this rule is a deliberate decision, not a cleanup.
+*.local.md
+
+# macOS
+.DS_Store

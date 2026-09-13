@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Overload</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">This week</string>
+    <string name="dashboard_week_range">%1$s to %2$s</string>
+    <string name="dashboard_overall_progress">Weekly goal reached: %1$d percent</string>
+    <string name="dashboard_total_sets">%1$s hard sets logged</string>
+    <string name="dashboard_volume_load">%1$s kg moved</string>
+    <string name="dashboard_empty_goal">No goal set yet. Define your weekly set ranges to start tracking.</string>
+    <string name="dashboard_empty_entries">Nothing logged for this week yet.</string>
+    <string name="dashboard_action_log">Log sets</string>
+    <string name="dashboard_action_goal">Goal</string>
+    <string name="dashboard_action_history">History</string>
+
+    <!-- Deload advice -->
+    <string name="deload_due_title">Deload week is due</string>
+    <string name="deload_due_body">%1$d accumulation weeks in a row. Halve your sets this week and keep the load.</string>
+    <string name="deload_in_progress">This week reads as a deload. Volume is well below your recent average.</string>
+    <string name="deload_within_block">Accumulation week %1$d of %2$d.</string>
+
+    <!-- Volume status -->
+    <string name="status_below_target">Below range</string>
+    <string name="status_in_target">In range</string>
+    <string name="status_above_target">Above range</string>
+    <string name="status_untargeted">No range set</string>
+    <string name="volume_sets_of_range">%1$s of %2$d to %3$d sets</string>
+    <string name="volume_sets_plain">%1$s sets</string>
+
+    <!-- Goal screen -->
+    <string name="goal_title">Weekly goal</string>
+    <string name="goal_phase">Phase</string>
+    <string name="goal_block_length">Accumulation weeks before a deload</string>
+    <string name="goal_targets">Weekly set ranges</string>
+    <string name="goal_min">Min</string>
+    <string name="goal_max">Max</string>
+    <string name="goal_action_prefill">Use suggested ranges</string>
+    <string name="goal_action_save">Save goal</string>
+    <string name="goal_error_range">Minimum must not be greater than maximum.</string>
+    <string name="goal_error_number">Enter whole numbers only.</string>
+
+    <!-- Log entry screen -->
+    <string name="log_title">Log sets</string>
+    <string name="log_exercise">Exercise</string>
+    <string name="log_primary_muscle">Trains directly</string>
+    <string name="log_secondary_muscles">Trains indirectly, counts half</string>
+    <string name="log_sets">Sets</string>
+    <string name="log_reps">Reps</string>
+    <string name="log_weight">Weight in kg</string>
+    <string name="log_rir">Reps in reserve, optional</string>
+    <string name="log_date">Date</string>
+    <string name="log_date_earlier">Earlier day</string>
+    <string name="log_date_later">Later day</string>
+    <string name="log_action_save">Save entry</string>
+    <string name="log_error_required">Fill in exercise, sets, reps and weight.</string>
+
+    <!-- History -->
+    <string name="history_title">History</string>
+    <string name="history_empty">No completed weeks yet.</string>
+    <string name="history_week">Week of %1$s</string>
+    <string name="history_deload">Deload week</string>
+    <string name="week_detail_title">Week detail</string>
+
+    <!-- Shared -->
+    <string name="action_back">Back</string>
+    <string name="phase_bulk">Bulk</string>
+    <string name="phase_maintenance">Maintenance</string>
+    <string name="phase_cut">Cut</string>
+
+    <!-- Muscle groups -->
+    <string name="muscle_chest">Chest</string>
+    <string name="muscle_back">Back</string>
+    <string name="muscle_shoulders_side">Side delts</string>
+    <string name="muscle_shoulders_rear">Rear delts</string>
+    <string name="muscle_biceps">Biceps</string>
+    <string name="muscle_triceps">Triceps</string>
+    <string name="muscle_quads">Quads</string>
+    <string name="muscle_hamstrings">Hamstrings</string>
+    <string name="muscle_glutes">Glutes</string>
+    <string name="muscle_calves">Calves</string>
+    <string name="muscle_abs">Abs</string>
+    <string name="muscle_forearms">Forearms</string>
+</resources>

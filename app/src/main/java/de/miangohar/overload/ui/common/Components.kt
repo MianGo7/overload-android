@@ -1,5 +1,6 @@
 package de.miangohar.overload.ui.common
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +20,13 @@ import de.miangohar.overload.R
 import de.miangohar.overload.domain.model.MuscleVolume
 import de.miangohar.overload.domain.model.VolumeStatus
 import de.miangohar.overload.ui.theme.AboveTarget
+import de.miangohar.overload.ui.theme.AboveTargetDark
 import de.miangohar.overload.ui.theme.BelowTarget
+import de.miangohar.overload.ui.theme.BelowTargetDark
 import de.miangohar.overload.ui.theme.InTarget
+import de.miangohar.overload.ui.theme.InTargetDark
+import de.miangohar.overload.ui.theme.Untargeted
+import de.miangohar.overload.ui.theme.UntargetedDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -51,11 +57,22 @@ fun VolumeStatus.label(): String = stringResource(
     },
 )
 
-fun VolumeStatus.color(): Color = when (this) {
-    VolumeStatus.UNTARGETED -> Color.Gray
-    VolumeStatus.BELOW_TARGET -> BelowTarget
-    VolumeStatus.IN_TARGET -> InTarget
-    VolumeStatus.ABOVE_TARGET -> AboveTarget
+/** Each status has a separate dark theme variant, see ADR-0013. */
+@Composable
+fun VolumeStatus.color(): Color = if (isSystemInDarkTheme()) {
+    when (this) {
+        VolumeStatus.UNTARGETED -> UntargetedDark
+        VolumeStatus.BELOW_TARGET -> BelowTargetDark
+        VolumeStatus.IN_TARGET -> InTargetDark
+        VolumeStatus.ABOVE_TARGET -> AboveTargetDark
+    }
+} else {
+    when (this) {
+        VolumeStatus.UNTARGETED -> Untargeted
+        VolumeStatus.BELOW_TARGET -> BelowTarget
+        VolumeStatus.IN_TARGET -> InTarget
+        VolumeStatus.ABOVE_TARGET -> AboveTarget
+    }
 }
 
 /**

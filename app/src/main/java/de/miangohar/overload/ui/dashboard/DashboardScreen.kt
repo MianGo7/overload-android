@@ -20,6 +20,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import de.miangohar.overload.BuildConfig
@@ -161,8 +162,9 @@ private fun DeloadCard(recommendation: DeloadRecommendation, blockLengthWeeks: I
             blockLengthWeeks,
         )
 
-        DeloadReason.BLOCK_COMPLETE -> stringResource(
-            R.string.deload_due_body,
+        DeloadReason.BLOCK_COMPLETE -> pluralStringResource(
+            R.plurals.deload_due_body,
+            recommendation.accumulationWeeks,
             recommendation.accumulationWeeks,
         )
     } ?: return

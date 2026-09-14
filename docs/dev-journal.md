@@ -105,3 +105,30 @@ from a raw database copy rather than to a defect, confirmed by a clean
 single tap test read through the app itself. Worth remembering for the
 report: a raw Room database file copy is not trustworthy evidence on its
 own.
+
+B3 closed the same day. Computing the actual WCAG contrast ratio of the
+volume status colours, rather than trusting them by eye, found three of four
+failing against the dark theme background and one marginally failing even
+against the light one; every status now has a checked light and dark value,
+ADR-0013. The stepper buttons' missing content description took several
+wrong turns to fix properly: `OutlinedButton` merges its own semantics, so a
+description set on an outer modifier or on the inner text both land on a
+separate accessibility node instead of the button's, only visible by
+inspecting `adb shell uiautomator dump` rather than assuming it worked.
+`clearAndSetSemantics` with the click action and role restated inside it was
+what actually produced one clickable node with the right label. Testing at
+200 percent text scale surfaced a real layout bug, not the one being looked
+for: the dashboard's three text actions crowded its title down to one or two
+characters per line, fixed by shortening the debug only "Seed demo data"
+label to "Seed". Error states were deliberately left out, a local Room read
+has no realistic failure path and wrapping every call in try/catch for a
+case that cannot occur would have been speculative code. Acceptance
+criterion AC7 moved to done.
+
+A later look at a screenshot caught a miss from that pass: an
+`OutlinedTextField` grows taller when its label wraps, and the log entry
+screen's "Reps in reserve, optional" label wrapped inside its half width
+field, leaving it taller than the weight field next to it. Fixed generally,
+every side by side field row now matches its tallest member via
+`Row(Modifier.height(IntrinsicSize.Min))`, and the label itself was
+shortened to "RIR (optional)".

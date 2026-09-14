@@ -34,6 +34,7 @@ data class GoalUiState(
     val rows: List<TargetRow> = MuscleGroup.entries.map { TargetRow(it, "", "") },
     @StringRes val errorRes: Int? = null,
     val isSaved: Boolean = false,
+    val isLoading: Boolean = true,
 )
 
 /** Edits the single training goal. Input stays as text until it is validated. */
@@ -52,6 +53,7 @@ class GoalViewModel(
                     phase = goal.phase,
                     blockLengthWeeks = goal.blockLengthWeeks,
                     rows = rowsOf(goal.targets),
+                    isLoading = false,
                 )
             }
         }

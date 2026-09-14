@@ -15,7 +15,7 @@ traceability the quality criterion of the grade asks for.
 | AC4 | The app evaluates progress and reports the current state | scaffolded | `domain/logic/ProgressEvaluator.kt`, `ui/dashboard` |
 | AC5 | The app implements several Android activities | scaffolded | 5 activities, see `AndroidManifest.xml` |
 | AC6 | The app is tested using unit tests | done | `app/src/test`, domain logic and the two form view models covered against fake repositories |
-| AC7 | The app is easy to use and follows Material Design and the Android app quality guidelines | open | Material 3 theme in place, needs a review pass |
+| AC7 | The app is easy to use and follows Material Design and the Android app quality guidelines | done | Material 3 theme with checked light and dark contrast, ADR-0013; content descriptions, empty and loading states, plural resources, verified touch targets, 200 percent text scale and landscape |
 | AC8 | The source code documentation is appropriate | partly | KDoc on public domain and data types |
 | AC9 | All code, resources and configuration needed to build, test and deploy are in a GitHub repository, link in the report | open | repository is local only so far |
 

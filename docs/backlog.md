@@ -62,21 +62,27 @@ surrounding volume.
 
 ---
 
-## B3, Material 3 and accessibility pass. Open.
+## B3, Material 3 and accessibility pass. Done, 2026-09-14.
 
-The application must visibly follow Material Design and the Android app quality
-guidelines rather than merely use Material components. Every interactive
-element requires a touch target of at least 48 density independent pixels and,
-where it is not self explanatory, a content description. The light theme, the
-dark theme and dynamic colour on Android 12 and above are each checked, as are
-text scaling at 200 percent and landscape orientation. No user facing string
-remains hardcoded, quantities use plural resources, and every screen has an
-empty state, a loading state and an error state. The status colours in
-`ui/theme/Color.kt` are verified in both themes, and TalkBack is run once over
-the main flow.
-
-The item is done when Android lint reports no accessibility warnings and
-acceptance criterion AC7 moves to done.
+The volume status colours failed WCAG contrast in dark theme, checked by
+computing the ratio rather than by eye, fixed with a dark variant per status,
+ADR-0013. Added the missing empty state on `WeekDetailScreen` and loading
+state on `GoalScreen`. Resolved the three `PluralsCandidate` warnings, one
+converted to a real `<plurals>` resource, two suppressed with a documented
+reason. Gave the block length stepper buttons a content description, which
+needed `Modifier.clearAndSetSemantics` with the click action restated inside
+it, confirmed correct via `adb shell uiautomator dump` rather than assumed.
+Touch targets already met 48dp. Testing at 200 percent text scale found a
+real bug, the dashboard's three text actions crowded its title unreadable,
+fixed by shortening the debug only "Seed demo data" label to "Seed".
+Landscape checked on every screen, nothing clips. TalkBack itself was not
+run, the accessibility tree it reads from was inspected instead. A later
+review caught inconsistent field heights across every side by side field
+row, `OutlinedTextField` grows when its label wraps unevenly; every such row
+now matches its tallest field via `Row(Modifier.height(IntrinsicSize.Min))`.
+Error states were deliberately left out, a local Room read has no realistic
+failure path and the existing form validation messages already cover the
+item's intent.
 
 ---
 

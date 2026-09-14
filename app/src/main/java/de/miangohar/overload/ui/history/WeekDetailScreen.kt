@@ -55,7 +55,15 @@ fun WeekDetailScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            state.progress?.let { progress ->
+            val progress = state.progress
+            if (progress == null || progress.muscleVolumes.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.week_detail_empty),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+            } else {
                 item {
                     Text(
                         text = stringResource(

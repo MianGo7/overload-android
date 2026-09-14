@@ -183,83 +183,75 @@ since both are removed in AGP 10.
 
 ## ADR-0011, every pinned version raised to its current stable release. 2026-09-14, accepted.
 
-Following ADR-0010, `lintDebug` continued to report a further twelve warnings
-concerning version currency: Kotlin, KSP, `androidx.core:core-ktx`, the three
-`androidx.lifecycle` artefacts, `androidx.activity:activity-compose`, the
-Jetpack Compose bill of materials (BOM), `androidx.test.ext:junit`, Espresso,
-`kotlinx-coroutines-test`, the Gradle wrapper itself, and a `compileSdk` value
-three levels below the ceiling that AGP 9.4 supports.
+Following ADR-0010, `lintDebug` reported twelve more version currency
+warnings: Kotlin, KSP, the AndroidX core, lifecycle, activity and test
+libraries, the Compose bill of materials (BOM), coroutines-test, the Gradle
+wrapper, and `compileSdk` below the ceiling AGP 9.4 supports. Every one was
+raised to its current release: Kotlin 2.4.20, KSP 2.3.12, the Compose BOM
+2026.09.00, `compileSdk`/`targetSdk` 37, and the rest of the listed libraries
+and the Gradle wrapper to their latest versions. Room and AGP stayed put,
+neither was flagged and Room 3.0 is still alpha.
 
-Every one of those was raised in the version catalogue: Kotlin to 2.4.20, KSP
-to 2.3.12, core-ktx to 1.19.0, lifecycle to 2.11.0, activity-compose to
-1.13.0, the Compose BOM to 2026.09.00, the AndroidX test extension to 1.3.0,
-Espresso to 3.7.0, and coroutines-test to 1.11.0, together with the Gradle
-wrapper to 9.7.1 and `compileSdk` and `targetSdk` to 37 in `app/build.gradle.kts`.
-Room remained at 2.8.5, since lint did not flag it and Room 3.0 is a Kotlin
-Multiplatform rewrite still in alpha with no stable release to move to. AGP
-remained at 9.4.0, already the current release. Leaving Kotlin at 2.2.10 was
-considered, on account of an open issue in the KSP issue tracker suggesting
-that Kotlin 2.4.0 support was unfinished, but was rejected in favour of
-testing the pairing directly rather than trusting the issue tracker: the
-`kspDebugKotlin` and `compileDebugKotlin` tasks, together with Room's
-annotation processing, all completed without error against KSP 2.3.12, which
-already carries a fix for Kotlin 2.4.0's module naming. The
-`-Xannotation-default-target=param-property` flag added under ADR-0010 was
-removed in the same change, since Kotlin 2.4's default language version
-already applies that behaviour and the compiler reported the flag itself as
-redundant.
+Leaving Kotlin at 2.2.10 was considered, since an open KSP issue suggested
+2.4.0 support was unfinished, but rejected in favour of testing the pairing
+directly: `kspDebugKotlin` and Room's annotation processing both completed
+without error against KSP 2.3.12. The `-Xannotation-default-target` flag from
+ADR-0010 was dropped in the same change, redundant now that Kotlin 2.4's
+default language version already applies that behaviour.
 
-Consequence: `testDebugUnitTest`, `lintDebug` and `assembleDebug` all pass
-with no dependency currency warnings remaining. Three `PluralsCandidate`
-warnings remain in `strings.xml`, concerning strings that format a count
-inline, which is a resource design question rather than a version problem
-and is left open. The Kotlin and AGP bump also surfaced a further deprecation
-warning, that `srcDirs` on the `androidTest` asset source set in
-`app/build.gradle.kts` is deprecated, which stems from the same legacy
-domain-specific language (DSL) compatibility mode as the two flags already
-tracked under backlog item B11, and is recorded there rather than fixed with
-an unconfirmed replacement.
+Consequence: all three Gradle commands pass with no dependency currency
+warnings left. The version bump also surfaced a `srcDirs` deprecation,
+tracked under B11 since it shares that item's root cause.
 
 ---
 
 ## ADR-0012, drop the standalone Kotlin Gradle plugin for AGP's built-in Kotlin support. 2026-09-14, accepted.
 
-Running the build with `-Pandroid.debug.obsoleteApi=true`, as backlog item
-B11 prescribed, traced both remaining compatibility flags in
-`gradle.properties` to a single cause rather than two: the `REASON` the
-Android Gradle plugin (AGP) reported for every `applicationVariants`,
-`testVariants` and `unitTestVariants` warning was that the
-`org.jetbrains.kotlin.android` plugin itself calls that legacy application
-programming interface (API) internally. `android.newDsl=false` and
-`android.builtInKotlin=false` were therefore not two separate migrations but
-one, since AGP 9 no longer needs a standalone Kotlin plugin to compile Kotlin
-sources.
+Running with `-Pandroid.debug.obsoleteApi=true`, as B11 prescribed, traced
+both remaining `gradle.properties` compatibility flags to one cause: AGP's
+own reported reason for every `applicationVariants`/`testVariants` warning
+was that the `org.jetbrains.kotlin.android` plugin itself calls that legacy
+API, not this project's build script. `android.newDsl` and
+`android.builtInKotlin` were therefore one migration, not two, solved by
+dropping that plugin in favour of AGP 9's built-in Kotlin support.
 
-The `org.jetbrains.kotlin.android` alias was removed from the `plugins`
-block in both `build.gradle.kts` files, and both compatibility flags were
-removed from `gradle.properties` in the same change. The Kotlin Symbol
-Processing (KSP) plugin, the Compose compiler plugin and the
-`kotlin { compilerOptions { } }` extension used for the Java virtual machine
-(JVM) target all continued to work unchanged, and the `srcDirs` deprecation
-recorded under ADR-0011 disappeared as a side effect, confirming it came
-from the same legacy compatibility mode. A further, previously unnoticed
-deprecation surfaced once the build ran clean enough to see it:
-`android.dependency.excludeLibraryComponentsFromConstraints=true`, which
-AGP's own warning said to replace with `android.dependency.useConstraints=false`.
-That was applied as well, since leaving one flag unaddressed while claiming
-the migration finished would not have been honest. The configuration cache,
-the last item in B11's scope, was then enabled and verified twice, once to
-confirm the cache is written and once more to confirm it is read back
-without error.
+The plugin alias was removed from both `build.gradle.kts` files and both
+flags from `gradle.properties`. KSP, the Compose compiler plugin and the
+`kotlin { compilerOptions { } }` block all kept working, and the `srcDirs`
+deprecation from ADR-0011 disappeared with them, confirming the shared cause.
+A further, previously unnoticed deprecation,
+`android.dependency.excludeLibraryComponentsFromConstraints`, was fixed the
+same way AGP's own warning suggested. The configuration cache, B11's last
+item, was enabled and verified with two clean builds, one to write it and
+one to read it back.
 
-Rejected: treating the two flags as separate migrations, since B11 as
-originally written assumed the `androidx.compose` variant caller might be
-this project's own build script and asked for it to be ported to
-`androidComponents { onVariants { } }` if so. Investigating first, rather
-than porting code that turned out not to exist, avoided writing an
-unnecessary migration shim.
+Rejected: porting a build script caller to `androidComponents { onVariants
+{ } }` as B11 originally assumed might be needed. Investigating first showed
+no such caller existed in this project's own code.
 
-Consequence: `gradle.properties` holds no AGP compatibility flags, and
-`testDebugUnitTest`, `lintDebug` and `assembleDebug` all run with no
-deprecation warnings at all, verified on a clean build. The configuration
-cache is on. Backlog item B11 is closed.
+Consequence: `gradle.properties` holds no AGP compatibility flags, all three
+Gradle commands run with no deprecation warnings, and B11 is closed.
+
+---
+
+## ADR-0013, separate dark theme colours for the volume status indicators. 2026-09-14, accepted.
+
+`VolumeStatus.color()` used one fixed colour per status in both themes.
+Computing the WCAG contrast ratio of each against the dark background,
+Graphite, rather than checking by eye, gave 3.54:1, 3.33:1 and 2.42:1, all
+below the 4.5:1 threshold for normal text. `BelowTarget` also only reached
+4.49:1 against the light background. `UNTARGETED` had no named colour at
+all, it used the raw `Color.Gray` constant directly.
+
+Every status now has a light and a brighter dark value in `ui/theme/Color.kt`
+clearing 4.5:1 with a comfortable margin, `BelowTarget` was darkened slightly
+so its light value clears it too, and `Untargeted`/`UntargetedDark` were
+added so every status is a named, checked colour rather than a literal.
+`VolumeStatus.color()` became a composable that reads
+`isSystemInDarkTheme()` to pick between the two sets.
+
+Rejected: relying on Material 3's dynamic colour scheme to compensate.
+Dynamic colour only affects roles Material 3 itself manages, not custom
+semantic colours declared outside that scheme.
+
+Consequence: every status colour clears WCAG AA 4.5:1 in both themes.

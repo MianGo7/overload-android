@@ -178,38 +178,23 @@ the share sheet appears on a real device.
 
 ---
 
-## B11, finishing the AGP 9 migration. Open, and blocking once AGP 10 is released.
+## B11, finishing the AGP 9 migration. Done, 2026-09-14.
 
-Two compatibility flags remain in `gradle.properties`, each for a different
-reason, and both are removed in AGP 10.
+Running with `-Pandroid.debug.obsoleteApi=true` traced `android.newDsl=false`
+and `android.builtInKotlin=false` to a single cause: the
+`org.jetbrains.kotlin.android` plugin itself was the caller of
+`applicationVariants`, `testVariants` and `unitTestVariants`, so both flags
+came off together once that plugin was dropped from `build.gradle.kts` in
+favour of the Kotlin support built into the Android Gradle plugin (AGP). KSP,
+the Compose compiler plugin and the unit tests all continued to work
+unchanged, and the `srcDirs` deprecation recorded under ADR-0011 disappeared
+as a side effect. A further deprecation, on the previously untouched
+`android.dependency.excludeLibraryComponentsFromConstraints=true`, was found
+and fixed in the same pass, replaced with `android.dependency.useConstraints=false`
+as AGP's own warning suggested. The configuration cache is now on, verified
+with two clean builds, one to write the cache and one to confirm it is read
+back without error. Recorded as ADR-0012.
 
-`android.newDsl=false` keeps the legacy variant application programming
-interface available. Something in the build calls `applicationVariants`,
-`testVariants` and `unitTestVariants`, and the caller is identified with
-`./gradlew testDebugUnitTest -Pandroid.debug.obsoleteApi=true`. If the caller
-is a plugin, a newer release of that plugin may already have dropped the legacy
-interface. If it is the project's own build script, it is ported to
-`androidComponents { onVariants { } }`. The flag is removed only afterwards.
-
-`android.builtInKotlin=false` keeps the separate Kotlin Gradle plugin in place
-instead of the Kotlin support built into AGP 9. Removing it entails dropping
-`org.jetbrains.kotlin.android` from the build script, so it is treated as a
-change of its own, after which KSP, the Compose compiler plugin and the unit
-tests are each verified.
-
-ADR-0011 raised Kotlin to 2.4.20 while AGP remained at 9.4.0, and that
-pairing now also reports that `getByName("androidTest").assets.srcDirs(...)`
-in `app/build.gradle.kts` is deprecated in favour of a `directories` mutable
-set. It stems from the same legacy DSL compatibility mode as the two flags
-above, so it is fixed in the same change, once the replacement API is
-confirmed from AGP's own documentation rather than guessed at.
-
-Once both flags are gone, the configuration cache is enabled through
-`org.gradle.configuration-cache=true` and retained only if a clean build and
-the tests both pass with it. Under no circumstances is any of this silenced
-with `android.sync.suppressAgpWarnings`, since a suppressed warning becomes a
-build failure at a less convenient moment.
-
-The item is done when `./gradlew testDebugUnitTest` and `./gradlew
-assembleDebug` run without deprecation warnings and no AGP compatibility flags
-remain.
+`./gradlew testDebugUnitTest`, `./gradlew lintDebug` and `./gradlew
+assembleDebug` all run with no deprecation warnings at all, and
+`gradle.properties` holds no AGP compatibility flags.

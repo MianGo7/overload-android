@@ -219,3 +219,47 @@ warning, that `srcDirs` on the `androidTest` asset source set in
 domain-specific language (DSL) compatibility mode as the two flags already
 tracked under backlog item B11, and is recorded there rather than fixed with
 an unconfirmed replacement.
+
+---
+
+## ADR-0012, drop the standalone Kotlin Gradle plugin for AGP's built-in Kotlin support. 2026-09-14, accepted.
+
+Running the build with `-Pandroid.debug.obsoleteApi=true`, as backlog item
+B11 prescribed, traced both remaining compatibility flags in
+`gradle.properties` to a single cause rather than two: the `REASON` the
+Android Gradle plugin (AGP) reported for every `applicationVariants`,
+`testVariants` and `unitTestVariants` warning was that the
+`org.jetbrains.kotlin.android` plugin itself calls that legacy application
+programming interface (API) internally. `android.newDsl=false` and
+`android.builtInKotlin=false` were therefore not two separate migrations but
+one, since AGP 9 no longer needs a standalone Kotlin plugin to compile Kotlin
+sources.
+
+The `org.jetbrains.kotlin.android` alias was removed from the `plugins`
+block in both `build.gradle.kts` files, and both compatibility flags were
+removed from `gradle.properties` in the same change. The Kotlin Symbol
+Processing (KSP) plugin, the Compose compiler plugin and the
+`kotlin { compilerOptions { } }` extension used for the Java virtual machine
+(JVM) target all continued to work unchanged, and the `srcDirs` deprecation
+recorded under ADR-0011 disappeared as a side effect, confirming it came
+from the same legacy compatibility mode. A further, previously unnoticed
+deprecation surfaced once the build ran clean enough to see it:
+`android.dependency.excludeLibraryComponentsFromConstraints=true`, which
+AGP's own warning said to replace with `android.dependency.useConstraints=false`.
+That was applied as well, since leaving one flag unaddressed while claiming
+the migration finished would not have been honest. The configuration cache,
+the last item in B11's scope, was then enabled and verified twice, once to
+confirm the cache is written and once more to confirm it is read back
+without error.
+
+Rejected: treating the two flags as separate migrations, since B11 as
+originally written assumed the `androidx.compose` variant caller might be
+this project's own build script and asked for it to be ported to
+`androidComponents { onVariants { } }` if so. Investigating first, rather
+than porting code that turned out not to exist, avoided writing an
+unnecessary migration shim.
+
+Consequence: `gradle.properties` holds no AGP compatibility flags, and
+`testDebugUnitTest`, `lintDebug` and `assembleDebug` all run with no
+deprecation warnings at all, verified on a clean build. The configuration
+cache is on. Backlog item B11 is closed.

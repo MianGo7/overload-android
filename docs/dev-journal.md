@@ -161,3 +161,16 @@ zero filled window with no band drawn, since no goal was set; the seeded
 demonstration history then showed the full window including the deload dip
 and a band, checked both overall and filtered to a muscle group, and again
 in dark theme.
+
+B6 added the first instrumented Compose test, `MainFlowTest`: a narrow chest
+target is set, three sets are logged against it, and the dashboard's own
+state and text are asserted on, against an in memory Room database and the
+three real view models. Two failures came from the test itself rather than
+the app. Clicking "Save goal" timed out with no error, since both forms
+scroll and Compose test dispatches a click at the node's laid out position
+regardless of what the scroll state currently shows, fixed by
+`performScrollTo()` before every off screen interaction. Reading the
+dashboard's state afterwards timed out too: `DashboardViewModel.uiState` is
+a `stateIn` flow that only starts collecting once something subscribes to
+it, so the test has to move to the dashboard screen before waiting on its
+state, not after, or the wait polls a value that was never being computed.

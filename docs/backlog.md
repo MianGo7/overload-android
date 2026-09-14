@@ -134,16 +134,24 @@ theme read correctly.
 
 ---
 
-## B6, user interface test for the main flow. Open.
+## B6, user interface test for the main flow. Done, 2026-09-14.
 
-One instrumented Compose test covers the path a user actually takes: setting a
-goal, logging an entry, and asserting that the dashboard shows the new volume
-and the correct status for that muscle group. The test uses an in memory Room
-database and the real view models, and asserts on behaviour rather than on
-layout details such as padding or colour.
+`MainFlowTest` sets a narrow target range for chest, logs three sets against
+it, then switches to the dashboard and asserts its status text and figures,
+against an in memory Room database and the three real view models rather
+than fakes. Screens are swapped through a small local `Screen` enum inside
+the one `setContent` call a Compose test allows, since a screen composable
+takes state and lambdas rather than a view model and does not need a real
+activity to be driven.
 
-The item is done when `connectedDebugAndroidTest` passes on a device or
-emulator.
+Two failures before it passed, neither in the code being tested. Clicking
+"Save goal" timed out silently because both forms scroll and Compose test's
+click dispatch uses the node's laid out position regardless of what the
+scroll state has actually brought on screen, `performScrollTo()` before each
+off screen interaction fixed it. Reading the dashboard's state also timed
+out at first: its `uiState` is a `stateIn` flow that only starts collecting
+once something subscribes, so the test has to switch to the dashboard
+screen before waiting on its state rather than after.
 
 ---
 

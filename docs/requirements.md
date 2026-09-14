@@ -14,7 +14,7 @@ traceability the quality criterion of the grade asks for.
 | AC3 | The app stores the data | scaffolded | `data/local`, Room database `overload.db` |
 | AC4 | The app evaluates progress and reports the current state | scaffolded | `domain/logic/ProgressEvaluator.kt`, `ui/dashboard` |
 | AC5 | The app implements several Android activities | scaffolded | 5 activities, see `AndroidManifest.xml` |
-| AC6 | The app is tested using unit tests | done | `app/src/test`, domain logic and the two form view models covered against fake repositories |
+| AC6 | The app is tested using unit tests | done | `app/src/test` for domain logic and the two form view models against fake repositories; `app/src/androidTest` for Room queries and migrations, plus one instrumented Compose test, `MainFlowTest`, covering the goal, log entry and dashboard screens together against a real in memory database |
 | AC7 | The app is easy to use and follows Material Design and the Android app quality guidelines | done | Material 3 theme with checked light and dark contrast, ADR-0013; content descriptions, empty and loading states, plural resources, verified touch targets, 200 percent text scale and landscape |
 | AC8 | The source code documentation is appropriate | partly | KDoc on public domain and data types |
 | AC9 | All code, resources and configuration needed to build, test and deploy are in a GitHub repository, link in the report | open | repository is local only so far |

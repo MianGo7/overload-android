@@ -319,3 +319,37 @@ line and band chart requires.
 Consequence: the chart is a small, fully owned composable with no external
 API to track for breaking changes, at the cost of writing the axis and
 scaling by hand.
+
+---
+
+## ADR-0016, FileProvider and an implicit intent for the CSV export. 2026-09-14, accepted.
+
+B10 needed the training log shared as a file. `SetEntryCsvFormatter` builds
+the CSV text in `domain/logic`, plain Kotlin and unit tested; `HistoryActivity`
+writes it to a file in the cache directory, wraps it with
+`androidx.core.content.FileProvider` and fires an implicit `ACTION_SEND`
+intent through `Intent.createChooser`, rather than the activity building the
+text itself, keeping the same rule-then-wiring split every other item this
+session has followed. `androidx.core:core-ktx`, already a dependency, is
+what brings `FileProvider`, so no new dependency was added. `Uri`, `Intent`
+and `File` are kept out of `HistoryViewModel` entirely, per the rule that a
+view model carries no Android framework types beyond a string resource id.
+
+Rejected: a raw `file://` URI, blocked by scoped storage since Android 10
+for a file outside the app's own storage; a bundled sharing library, which
+would need its own dependency entry for what the platform already provides.
+Excel and PDF export were also considered and rejected for this item: Excel
+has no lightweight library on Android, only Apache POI, which is heavy and a
+poor fit; PDF needs no new dependency, `android.graphics.pdf.PdfDocument` is
+in the platform, but needs a hand built table and pagination renderer, a
+materially larger task than the plain CSV the item actually asks for.
+
+This is distinct from ADR-0008, which excludes training data from automatic
+cloud backup. That concerns data leaving the device without the user acting;
+this is an explicit, user triggered share of the same data, which does not
+conflict with it.
+
+Consequence: a new manifest `<provider>` entry and `res/xml/file_paths.xml`,
+both required for `FileProvider` regardless of which sharing mechanism was
+chosen, and a share sheet that works with whatever the receiving device has
+installed rather than one fixed destination.

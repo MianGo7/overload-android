@@ -196,3 +196,13 @@ rather than new production code. `SetEntry` gained sets and reps ceilings,
 mirroring how the existing lower bounds are already double guarded between
 the two. `WeekDetailScreen` gained the per entry list it never had, delete
 behind a confirmation dialog reusing `GoalScreen`'s existing dialog shape.
+
+B10 added `SetEntryCsvFormatter` in `domain/logic`, plain Kotlin and unit
+tested, and wired `FileProvider` plus an implicit `ACTION_SEND` intent in
+`HistoryActivity`, ADR-0016. Excel was ruled out before implementation,
+Apache POI is the only option and a poor fit for Android; PDF needs no new
+dependency but a hand built table and pagination renderer, judged too large
+for this pass. Verified on the emulator: the share sheet listed
+`overload-log.csv`, and the file pulled from the cache directory read back
+correctly, RFC 4180 quoting intact, an entry deleted earlier in the same
+session correctly missing from its own week while still present in another.

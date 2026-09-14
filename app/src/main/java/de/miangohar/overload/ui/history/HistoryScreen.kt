@@ -43,6 +43,7 @@ fun HistoryScreen(
     state: HistoryUiState,
     onTrendMuscleGroupSelected: (MuscleGroup?) -> Unit,
     onOpenWeek: (TrainingWeek) -> Unit,
+    onExportCsv: () -> Unit,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -50,6 +51,9 @@ fun HistoryScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.history_title)) },
                 actions = {
+                    TextButton(onClick = onExportCsv) {
+                        Text(stringResource(R.string.history_export_action))
+                    }
                     TextButton(onClick = onBack) {
                         Text(stringResource(R.string.action_back))
                     }

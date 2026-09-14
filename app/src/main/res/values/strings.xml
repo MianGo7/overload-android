@@ -91,6 +91,8 @@
     <string name="week_detail_delete_entry">Delete %1$s</string>
     <string name="week_detail_delete_confirm_title">Delete this entry?</string>
     <string name="week_detail_delete_confirm_message">%1$s will be removed from this week\'s log.</string>
+    <string name="history_export_action">Export</string>
+    <string name="history_export_chooser_title">Share training log</string>
 
     <!-- Shared -->
     <string name="action_back">Back</string>

@@ -197,14 +197,18 @@ supported deletion, no screen exposed it.
 
 ---
 
-## B10, export the log as a comma separated values file. Optional.
+## B10, export the log as a comma separated values file. Done, 2026-09-14.
 
-The file is written to the cache directory and shared through a `FileProvider`
-and an implicit intent, which provides a second clean example of intents for
-the transfer chapter.
-
-The item is done when the file opens correctly in a spreadsheet application and
-the share sheet appears on a real device.
+`SetEntryCsvFormatter` builds the CSV text in `domain/logic`, RFC 4180
+quoting for fields containing a comma or a quote, unit tested. `HistoryActivity`
+writes it to the cache directory, wraps it with `FileProvider` and fires an
+implicit `ACTION_SEND` intent, ADR-0016; `Uri`/`Intent`/`File` stay out of
+the view model. Verified on the emulator: the share sheet appeared listing
+`overload-log.csv`, and the pulled file read back well formed, header row
+correct, secondary muscles semicolon joined, an entry deleted during this
+same session correctly absent from its week while still present in an
+earlier one. Excel and PDF were considered and rejected for this item, see
+the ADR.
 
 ---
 

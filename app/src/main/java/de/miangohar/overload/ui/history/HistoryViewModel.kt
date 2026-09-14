@@ -10,6 +10,7 @@ import de.miangohar.overload.domain.logic.DeloadAdvisor
 import de.miangohar.overload.domain.logic.ProgressEvaluator
 import de.miangohar.overload.domain.logic.VolumeCalculator
 import de.miangohar.overload.domain.model.MuscleGroup
+import de.miangohar.overload.domain.model.SetEntry
 import de.miangohar.overload.domain.model.TrainingWeek
 import de.miangohar.overload.domain.model.WeeklyTotal
 import de.miangohar.overload.domain.repository.GoalRepository
@@ -35,6 +36,8 @@ data class HistoryUiState(
     val trend: List<WeeklyTotal> = emptyList(),
     val targetBand: ClosedFloatingPointRange<Double>? = null,
     val selectedMuscleGroup: MuscleGroup? = null,
+    /** Every logged entry, unfiltered, for exporting the full log. */
+    val entries: List<SetEntry> = emptyList(),
     val isLoading: Boolean = true,
 )
 
@@ -76,6 +79,7 @@ class HistoryViewModel(
             ),
             targetBand = ProgressEvaluator.targetBand(goal, muscleGroup),
             selectedMuscleGroup = muscleGroup,
+            entries = entries,
             isLoading = false,
         )
     }

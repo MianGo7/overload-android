@@ -9,6 +9,7 @@ import de.miangohar.overload.OverloadApplication
 import de.miangohar.overload.domain.logic.DeloadAdvisor
 import de.miangohar.overload.domain.logic.DeloadRecommendation
 import de.miangohar.overload.domain.logic.ProgressEvaluator
+import de.miangohar.overload.domain.logic.SeedDataGenerator
 import de.miangohar.overload.domain.logic.VolumeCalculator
 import de.miangohar.overload.domain.model.TrainingGoal
 import de.miangohar.overload.domain.model.TrainingWeek
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.Clock
 import java.time.LocalDate
 
@@ -53,8 +55,8 @@ data class DashboardUiState(
  * testable without an Android runtime.
  */
 class DashboardViewModel(
-    setEntryRepository: SetEntryRepository,
-    goalRepository: GoalRepository,
+    private val setEntryRepository: SetEntryRepository,
+    private val goalRepository: GoalRepository,
     private val clock: Clock = Clock.systemDefaultZone(),
 ) : ViewModel() {
 
@@ -77,6 +79,19 @@ class DashboardViewModel(
         started = SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
         initialValue = DashboardUiState.loading(TrainingWeek.containing(LocalDate.now(clock))),
     )
+
+    /**
+     * Fills the database with a plausible training history for demonstrations
+     * and screenshots. Only ever called from a debug build, see
+     * [de.miangohar.overload.BuildConfig.DEBUG] at the call site.
+     */
+    fun onSeedRequested() {
+        val seedData = SeedDataGenerator.generate(LocalDate.now(clock))
+        viewModelScope.launch {
+            goalRepository.saveGoal(seedData.goal)
+            seedData.entries.forEach { entry -> setEntryRepository.add(entry) }
+        }
+    }
 
     companion object {
         private const val STOP_TIMEOUT_MILLIS = 5_000L

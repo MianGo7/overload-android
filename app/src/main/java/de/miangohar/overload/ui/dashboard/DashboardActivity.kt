@@ -34,6 +34,7 @@ class DashboardActivity : ComponentActivity() {
                     onLogSets = { startActivity(Intent(this, LogEntryActivity::class.java)) },
                     onEditGoal = { startActivity(Intent(this, GoalActivity::class.java)) },
                     onOpenHistory = { startActivity(Intent(this, HistoryActivity::class.java)) },
+                    onSeedDemoData = viewModel::onSeedRequested,
                 )
             }
         }

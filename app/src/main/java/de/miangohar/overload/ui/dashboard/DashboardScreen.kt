@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import de.miangohar.overload.BuildConfig
 import de.miangohar.overload.R
 import de.miangohar.overload.domain.logic.DeloadReason
 import de.miangohar.overload.domain.logic.DeloadRecommendation
@@ -43,6 +44,7 @@ fun DashboardScreen(
     onLogSets: () -> Unit,
     onEditGoal: () -> Unit,
     onOpenHistory: () -> Unit,
+    onSeedDemoData: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -61,6 +63,11 @@ fun DashboardScreen(
                     }
                 },
                 actions = {
+                    if (BuildConfig.DEBUG) {
+                        TextButton(onClick = onSeedDemoData) {
+                            Text(stringResource(R.string.dashboard_action_seed))
+                        }
+                    }
                     TextButton(onClick = onEditGoal) {
                         Text(stringResource(R.string.dashboard_action_goal))
                     }

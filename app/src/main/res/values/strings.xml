@@ -13,6 +13,7 @@
     <string name="dashboard_action_log">Log sets</string>
     <string name="dashboard_action_goal">Goal</string>
     <string name="dashboard_action_history">History</string>
+    <string name="dashboard_action_seed">Seed demo data</string>
 
     <!-- Deload advice -->
     <string name="deload_due_title">Deload week is due</string>

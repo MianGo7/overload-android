@@ -45,20 +45,20 @@ moves to done.
 
 ---
 
-## B2, seed data for demonstrations and screenshots. Open.
+## B2, seed data for demonstrations and screenshots. Done, 2026-09-14.
 
-A debug only action fills the database with a plausible training history of six
-to eight weeks, with a goal configured and realistic exercise names, loads and
-repetition ranges. One of those weeks must be a genuine deload week, meaning
-its volume is at or below half of the trailing average, so that the deload
-advice can be demonstrated and captured in a screenshot. The action is guarded
-so that no seeding code is reachable in a release build.
-
-This item unblocks anything visual, including the screenshots the report
-requires, and is therefore taken early.
-
-The item is done when a fresh installation followed by a single action produces
-a populated dashboard, a populated history and a visible deload state.
+`SeedDataGenerator` in `domain/logic` builds seven weeks of training history
+across a fixed six day exercise split covering all twelve muscle groups, with
+one week deliberately trained at three tenths of normal volume and the four
+weeks after it timed to match the seeded goal's block length, so the deload
+advisor reports the block as complete on the most recent week. A debug only
+"Seed demo data" action on the dashboard, gated by `BuildConfig.DEBUG`, calls
+it and writes the result through the existing repositories. Verified on a
+freshly installed debug build on an emulator: a single tap takes the
+dashboard from the empty state to 92 percent of the weekly goal with the
+"Deload week is due" card shown, and the history screen lists all seven weeks
+with the genuinely light week labelled a deload week at well under half the
+surrounding volume.
 
 ---
 

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,13 +9,13 @@ plugins {
 
 android {
     namespace = "de.miangohar.overload"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "de.miangohar.overload"
         // API 26 is the floor because the domain layer uses java.time without desugaring.
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -41,10 +43,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
     buildFeatures {
         compose = true
     }
@@ -64,6 +62,12 @@ android {
     sourceSets {
         // Exported Room schemas are used by migration tests.
         getByName("androidTest").assets.srcDirs("$projectDir/schemas")
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 

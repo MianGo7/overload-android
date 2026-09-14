@@ -1,303 +1,211 @@
 # Backlog
 
-Engineering work items, roughly in the order they should be taken. Each item
-is sized to fit one working session and to produce a reviewable diff.
+Work items in approximate priority order. One item is taken at a time and
+committed before the next begins.
 
-How to use this file:
-
-- Take one item at a time. Read the item, read the files it names, settle on a
-  plan, implement it, run the checks, update the documents listed under
-  "documents to update", then commit.
-- Do not start a second item before the first one is committed.
-- If an item turns out to require a decision that is not already settled in
-  `decision-log.md`, settle it deliberately and record an ADR for it.
-- Status values: open, in progress, done. Keep them current.
-
-Every item inherits the repository conventions: rules live in the domain layer
-and are unit tested, nothing is pushed automatically, and the definition of
-done at the end of this file applies.
+Three conditions apply to every item. The unit tests and Android lint pass
+before a commit is made, `requirements.md` is updated whenever an acceptance
+criterion moves, and any decision not already recorded in `decision-log.md`
+receives an entry there. The status of an item is open, in progress or done.
 
 ---
 
-## B0, get the first build green
+## B0, first build green. Done, 2026-09-14.
 
-Status: open. Priority: blocking, nothing else can start.
-
-**Goal.** The project compiles, the unit tests run and the debug build
-installs.
-
-**Context.** The project has not been compiled yet. Expect version
-mismatches, a wrong import or an API that moved between Compose releases.
-
-**Scope.**
-
-- Fix compilation and sync errors until `./gradlew testDebugUnitTest`,
-  `./gradlew lintDebug` and `./gradlew assembleDebug` all succeed.
-- If a dependency version has to change, change it in
-  `gradle/libs.versions.toml` and nowhere else, and add a line to ADR-0005
-  saying which version moved and why.
-- Do not fix a failure by deleting a test, weakening an assertion or
-  flattening the layering. Those are the parts being graded.
-
-**Done when.** The three Gradle commands above pass, the app launches on a
-device or emulator, and the dev journal records what had to be changed.
-
-**Documents to update.** `dev-journal.md`, and ADR-0005 if versions moved.
+Synchronisation, unit tests and the debug build all pass. Completing this item
+required an unplanned toolchain upgrade, described in the journal entry for
+2026-09-14 and decided in ADR-0010, followed by bringing every pinned
+dependency up to its current stable release, decided in ADR-0011. The debug
+build was installed on a paired device and launched without incident,
+satisfying the item's last remaining condition.
 
 ---
 
-## B1, unit tests for the form validation rules
+## B1, unit tests for the form validation rules. Open.
 
-Status: open. Priority: high. Grade link: quality, criterion AC6.
+The validation rules in the two form view models are not yet covered. For
+`GoalViewModel` the tests must show that a row with both fields empty is
+skipped, that a row with only one field filled is rejected, that a minimum
+above the maximum is rejected, and that the block length is clamped to the
+permitted range. For `LogEntryViewModel` they must show that a blank exercise
+name, a value of zero for sets or repetitions and a missing weight are all
+rejected, that a comma is accepted as a decimal separator, and that selecting a
+muscle group as primary removes it from the secondary set.
 
-**Goal.** The validation rules in the two form view models are covered by JVM
-unit tests.
+The tests run against fake repositories rather than Room, and Robolectric is
+not to be introduced. Where a rule cannot be tested without an Android class,
+the rule is first extracted into a plain function.
 
-**Scope.**
-
-- `GoalViewModel`: a row with both fields empty is skipped, a row with only
-  one field filled is rejected, a minimum above the maximum is rejected, valid
-  rows are turned into targets, the block length is clamped to the allowed
-  range.
-- `LogEntryViewModel`: blank exercise name, zero or missing sets or reps and a
-  missing weight are rejected, a comma is accepted as a decimal separator,
-  selecting a muscle group as primary removes it from the secondary set.
-- If testing a rule requires an Android class, extract the rule into a pure
-  function in `domain` or a plain Kotlin class in the same ui package and test
-  that instead. Do not add Robolectric.
-- Use fake repositories, not Room. A small in memory fake that implements the
-  repository interface belongs in `app/src/test/java/.../fake/`.
-
-**Done when.** New tests pass, the rules above are each covered by a named
-test, and AC6 in `requirements.md` moves from partly to done.
-
-**Documents to update.** `requirements.md`, `dev-journal.md`.
+The item is done when those cases are covered and acceptance criterion AC6
+moves to done.
 
 ---
 
-## B2, seed data for demonstrations and screenshots
+## B2, seed data for demonstrations and screenshots. Open.
 
-Status: open. Priority: high, unblocks anything visual. Grade link:
-documentation, creativity.
+A debug only action fills the database with a plausible training history of six
+to eight weeks, with a goal configured and realistic exercise names, loads and
+repetition ranges. One of those weeks must be a genuine deload week, meaning
+its volume is at or below half of the trailing average, so that the deload
+advice can be demonstrated and captured in a screenshot. The action is guarded
+so that no seeding code is reachable in a release build.
 
-**Goal.** A debug only action that fills the database with a plausible
-training history.
+This item unblocks anything visual, including the screenshots the report
+requires, and is therefore taken early.
 
-**Scope.**
-
-- Six to eight weeks of entries across all tracked muscle groups, with a goal
-  configured, realistic exercise names, loads and rep ranges.
-- One of those weeks must be a genuine deload week, meaning its volume is at
-  or below half of the trailing average, so that the deload advice can be
-  demonstrated and screenshotted.
-- Debug builds only. Use a `debug` source set or a `BuildConfig.DEBUG` guard
-  so that nothing ships in a release build.
-- Trigger it from an obvious place in debug, for example an action in the
-  dashboard top bar that only exists in debug.
-
-**Done when.** A fresh install plus one tap produces a populated dashboard, a
-populated history and a visible deload state, and no seeding code is reachable
-in a release build.
-
-**Documents to update.** `dev-journal.md`.
+The item is done when a fresh installation followed by a single action produces
+a populated dashboard, a populated history and a visible deload state.
 
 ---
 
-## B3, Material 3 and accessibility pass
+## B3, Material 3 and accessibility pass. Open.
 
-Status: open. Priority: high. Grade link: quality, criterion AC7.
+The application must visibly follow Material Design and the Android app quality
+guidelines rather than merely use Material components. Every interactive
+element requires a touch target of at least 48 density independent pixels and,
+where it is not self explanatory, a content description. The light theme, the
+dark theme and dynamic colour on Android 12 and above are each checked, as are
+text scaling at 200 percent and landscape orientation. No user facing string
+remains hardcoded, quantities use plural resources, and every screen has an
+empty state, a loading state and an error state. The status colours in
+`ui/theme/Color.kt` are verified in both themes, and TalkBack is run once over
+the main flow.
 
-**Goal.** The app visibly follows Material Design and the Android app quality
-guidelines rather than merely using Material components.
-
-**Scope.**
-
-- Every interactive element has a minimum touch target of 48 dp and, where it
-  is not self explanatory, a content description.
-- Check light theme, dark theme and dynamic colour on Android 12 and above.
-  The status colours in `ui/theme/Color.kt` must stay readable in both themes,
-  adjust them if they do not.
-- Check text scaling at 200 percent and landscape orientation. Nothing may be
-  cut off or overlap.
-- No hardcoded user facing strings anywhere, plurals use plural resources.
-- Empty states, loading states and error states exist on every screen.
-- Run TalkBack over the main flow once and fix what is unusable.
-- Fix every accessibility and usability warning Android lint reports.
-
-**Done when.** `./gradlew lintDebug` reports no accessibility warnings, the
-checks above are recorded as a short checklist in the journal entry, and AC7
-in `requirements.md` moves to done.
-
-**Documents to update.** `requirements.md`, `dev-journal.md`.
+The item is done when Android lint reports no accessibility warnings and
+acceptance criterion AC7 moves to done.
 
 ---
 
-## B4, logging reminder with a notification
+## B4, logging reminder. Open.
 
-Status: open. Priority: high. Grade link: transfer, this is the item that maps
-most directly onto the course material.
+An optional daily reminder, configured on the goal screen, is scheduled with
+WorkManager and accompanied by a receiver for `BOOT_COMPLETED` so that the
+schedule survives a restart. The notification opens `LogEntryActivity` through
+an explicit intent. The `POST_NOTIFICATIONS` runtime permission is handled on
+Android 13 and above, including the case in which the user declines it, and the
+reminder is skipped on a day where something has already been logged. The
+setting is stored with the goal rather than in a separate mechanism.
 
-**Goal.** An optional daily reminder to log training, which the user can
-enable and time on the goal screen.
+This item maps more directly onto units 5 and 6 of the course book than any
+other in the backlog, which makes it worth more to the transfer criterion than
+its size suggests. It introduces a dependency and therefore requires an ADR.
 
-**Scope.**
-
-- Schedule with WorkManager. Add the dependency to the version catalogue and
-  record an ADR for it.
-- A `BroadcastReceiver` for `BOOT_COMPLETED` so that the schedule survives a
-  restart. This is the part that demonstrates unit 5 of the course book.
-- The notification opens `LogEntryActivity` through an explicit intent.
-- Handle the `POST_NOTIFICATIONS` runtime permission on API 33 and above,
-  including the case where the user declines.
-- Skip the reminder on a day where something has already been logged.
-- The reminder setting is stored with the goal, not in a separate mechanism.
-
-**Done when.** The reminder fires, survives a reboot, opens the entry screen,
-behaves correctly when the permission is denied, and the new dependency has
-an ADR.
-
-**Documents to update.** `decision-log.md`, `requirements.md`,
-`dev-journal.md`.
+The item is done when the reminder fires, survives a reboot, opens the entry
+screen, and behaves correctly when the permission is denied.
 
 ---
 
-## B5, weekly volume trend
+## B5, weekly volume trend. Open.
 
-Status: open. Priority: medium. Grade link: creativity, and it strengthens the
-critical evaluation chapter.
+A chart shows accumulated weekly sets over the last eight to twelve weeks,
+overall and for a selected muscle group, with the target range drawn as a band
+behind the line so that the chart answers the same question as the dashboard.
+It is drawn with a Compose `Canvas` in preference to a charting dependency; a
+dependency would require an ADR. A textual summary of the trend accompanies the
+chart for accessibility, and the colours are verified in both themes.
 
-**Goal.** A chart showing accumulated weekly sets over the last eight to
-twelve weeks, so that trends and deloads are visible at a glance.
-
-**Scope.**
-
-- Overall volume, and per muscle group when one is selected.
-- Draw the target range as a band behind the line so that the chart answers
-  the same question as the dashboard.
-- Prefer Compose `Canvas` over a charting dependency. If a dependency is
-  genuinely better, propose it first and record an ADR.
-- The chart needs a text alternative for accessibility, for example a summary
-  line stating the trend.
-- Colours must work in light and dark themes.
-
-**Done when.** The history screen shows the trend, it renders correctly with
-one week of data and with twelve, and it is readable in both themes.
-
-**Documents to update.** `decision-log.md` if a dependency is added,
-`dev-journal.md`.
+The item is done when the chart renders correctly with one week of data and
+with twelve.
 
 ---
 
-## B6, UI test for the main flow
+## B6, user interface test for the main flow. Open.
 
-Status: open. Priority: medium. Grade link: quality, depth of AC6.
+One instrumented Compose test covers the path a user actually takes: setting a
+goal, logging an entry, and asserting that the dashboard shows the new volume
+and the correct status for that muscle group. The test uses an in memory Room
+database and the real view models, and asserts on behaviour rather than on
+layout details such as padding or colour.
 
-**Goal.** One instrumented Compose test covering the path a user actually
-takes.
-
-**Scope.**
-
-- Set a goal, log an entry, assert that the dashboard shows the new volume and
-  the correct status for that muscle group.
-- Use an in memory Room database and the real view models. Do not assert on
-  padding, colours or layout details.
-
-**Done when.** `./gradlew connectedDebugAndroidTest` passes on a device or
+The item is done when `connectedDebugAndroidTest` passes on a device or
 emulator.
 
-**Documents to update.** `requirements.md`, `dev-journal.md`.
+---
+
+## B7, Room migration and its test. Open, and urgent as soon as the schema changes.
+
+The first schema change ships with a real migration rather than a destructive
+one. The database version is raised, the `Migration` object is written, and the
+exported schema is committed under `app/schemas`. A test using
+`MigrationTestHelper` opens the previous schema, inserts a row, migrates, and
+asserts that the row survived. Destructive migration is not enabled under any
+circumstances.
 
 ---
 
-## B7, Room migration and its test
+## B8, source code documentation pass. Open.
 
-Status: open. Priority: medium, becomes urgent the moment the schema changes.
+The documentation must carry the reasoning rather than restate the code. Every
+public type and every non obvious public function receives KDoc explaining why
+it exists and which invariants it maintains. Constants that encode a domain
+decision, such as the half set credit and the deload ratio, name the decision
+and refer to the corresponding ADR. Comments that merely repeat the line below
+them are removed.
 
-**Goal.** The first schema change ships with a real migration instead of a
-destructive one.
-
-**Scope.**
-
-- Bump the database version, write the `Migration` object, commit the exported
-  schema JSON under `app/schemas`.
-- Add a migration test using `MigrationTestHelper` that opens the old schema,
-  inserts a row, migrates and asserts the row survived.
-- Never enable `fallbackToDestructiveMigration`.
-
-**Done when.** The migration test passes and the exported schemas for both
-versions are committed.
-
-**Documents to update.** `dev-journal.md`.
+The item is done when the domain layer can be read from beginning to end and
+understood without the report open, satisfying acceptance criterion AC8.
 
 ---
 
-## B8, source code documentation pass
+## B9, edge cases. Open.
 
-Status: open. Priority: medium. Grade link: criterion AC8.
+Several cases remain unhandled and each is worth a sentence in the evaluation
+chapter. The week may roll over at midnight while the application is open, in
+which case the dashboard should move to the new week. Entries may be dated in
+the future or far in the past. Locale specific decimal separators appear in the
+weight field. Implausible input such as 999 sets affects the progress
+indicator. Deleting an entry is supported by the repository but exposed by no
+screen.
 
-**Goal.** The documentation carries the reasoning, not a restatement of the
-code.
-
-**Scope.**
-
-- KDoc on every public type and every non obvious public function, explaining
-  why it exists and what invariants it keeps.
-- Every constant that encodes a domain decision, for example the half set
-  credit and the deload ratio, names the decision and points at the ADR.
-- Remove comments that only repeat the line below them.
-
-**Done when.** A reviewer can read the domain layer top to bottom and
-understand the rules without opening the report.
-
-**Documents to update.** `requirements.md`, `dev-journal.md`.
+Each case is either handled and covered by a test, or recorded in the journal
+as a known limitation with a reason. A limitation that is named is worth more
+in the report than a defect that is silent.
 
 ---
 
-## B9, edge cases
+## B10, export the log as a comma separated values file. Optional.
 
-Status: open. Priority: low, but each one is a sentence in the evaluation
-chapter.
+The file is written to the cache directory and shared through a `FileProvider`
+and an implicit intent, which provides a second clean example of intents for
+the transfer chapter.
 
-**Scope.**
-
-- The app is open when the week rolls over at midnight. The dashboard should
-  move to the new week rather than keep showing the old one.
-- Entries dated in the future, and entries dated far in the past.
-- Locale decimal separators in the weight field.
-- Very large inputs, for example 999 sets, and how the progress bar behaves.
-- Deleting an entry, which the repository supports but no screen exposes yet.
-
-**Done when.** Each case is either handled with a test, or listed in the
-journal as a known limitation with a reason. A named limitation is worth more
-in the report than a silent bug.
-
-**Documents to update.** `dev-journal.md`.
+The item is done when the file opens correctly in a spreadsheet application and
+the share sheet appears on a real device.
 
 ---
 
-## B10, export the log as CSV
+## B11, finishing the AGP 9 migration. Open, and blocking once AGP 10 is released.
 
-Status: open. Priority: optional.
+Two compatibility flags remain in `gradle.properties`, each for a different
+reason, and both are removed in AGP 10.
 
-**Goal.** Share or save the training log as a CSV file.
+`android.newDsl=false` keeps the legacy variant application programming
+interface available. Something in the build calls `applicationVariants`,
+`testVariants` and `unitTestVariants`, and the caller is identified with
+`./gradlew testDebugUnitTest -Pandroid.debug.obsoleteApi=true`. If the caller
+is a plugin, a newer release of that plugin may already have dropped the legacy
+interface. If it is the project's own build script, it is ported to
+`androidComponents { onVariants { } }`. The flag is removed only afterwards.
 
-**Scope.** Build the file in the cache directory, hand it out with a
-`FileProvider` and an implicit share intent. This is a second, clean example
-of intents for the transfer chapter.
+`android.builtInKotlin=false` keeps the separate Kotlin Gradle plugin in place
+instead of the Kotlin support built into AGP 9. Removing it entails dropping
+`org.jetbrains.kotlin.android` from the build script, so it is treated as a
+change of its own, after which KSP, the Compose compiler plugin and the unit
+tests are each verified.
 
-**Done when.** The file opens correctly in a spreadsheet application and the
-share sheet appears on a real device.
+ADR-0011 raised Kotlin to 2.4.20 while AGP remained at 9.4.0, and that
+pairing now also reports that `getByName("androidTest").assets.srcDirs(...)`
+in `app/build.gradle.kts` is deprecated in favour of a `directories` mutable
+set. It stems from the same legacy DSL compatibility mode as the two flags
+above, so it is fixed in the same change, once the replacement API is
+confirmed from AGP's own documentation rather than guessed at.
 
-**Documents to update.** `dev-journal.md`.
+Once both flags are gone, the configuration cache is enabled through
+`org.gradle.configuration-cache=true` and retained only if a clean build and
+the tests both pass with it. Under no circumstances is any of this silenced
+with `android.sync.suppressAgpWarnings`, since a suppressed warning becomes a
+build failure at a less convenient moment.
 
----
-
-## Definition of done
-
-An item is done when:
-
-- `./gradlew testDebugUnitTest` and `./gradlew lintDebug` pass,
-- the documents listed by the item are updated in the same commit,
-- the item status above is current,
-- `requirements.md` still reflects reality,
-- and the change is committed locally. Pushing is a manual step.
+The item is done when `./gradlew testDebugUnitTest` and `./gradlew
+assembleDebug` run without deprecation warnings and no AGP compatibility flags
+remain.

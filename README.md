@@ -76,7 +76,6 @@ emulator.
       requirements.md          acceptance criteria and their status
       decision-log.md          architecture decisions with alternatives
       dev-journal.md           chronological development record
-      next-steps.md            what happens next and who does it
       backlog.md               scoped work items, taken one at a time
       wireframes/              screen sketches
 

@@ -26,9 +26,8 @@ stable Compose interfaces. The intention was that the first synchronisation
 would surface at most a small number of failures rather than several unrelated
 ones at once.
 
-The planning documents followed later the same day: the personal checklist in
-`next-steps.md`, the backlog, and a local summary of what the examination
-requires. That summary is excluded from version control through the
+The planning documents followed later the same day: a personal checklist, the
+backlog, and a local summary of what the examination requires. That summary is excluded from version control through the
 `*.local.md` rule, because IU holds the copyright on its examination tasks and
 objects to their publication on third party platforms, and the repository will
 be linked in the report.

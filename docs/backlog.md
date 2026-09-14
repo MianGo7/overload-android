@@ -21,20 +21,24 @@ satisfying the item's last remaining condition.
 
 ---
 
-## B1, unit tests for the form validation rules. Open.
+## B1, unit tests for the form validation rules. Done, 2026-09-14.
 
-The validation rules in the two form view models are not yet covered. For
-`GoalViewModel` the tests must show that a row with both fields empty is
-skipped, that a row with only one field filled is rejected, that a minimum
-above the maximum is rejected, and that the block length is clamped to the
-permitted range. For `LogEntryViewModel` they must show that a blank exercise
-name, a value of zero for sets or repetitions and a missing weight are all
-rejected, that a comma is accepted as a decimal separator, and that selecting a
-muscle group as primary removes it from the secondary set.
+`GoalViewModelTest` covers a row with both fields empty being skipped, a row
+with only one field filled being rejected, a minimum above the maximum being
+rejected and the block length being clamped to the permitted range, alongside
+a valid row being turned into a saved target. `LogEntryViewModelTest` covers a
+blank exercise name, a value of zero for sets or repetitions and a missing
+weight all being rejected, a comma being accepted as a decimal separator, and
+selecting a muscle group as primary removing it from the secondary set.
 
-The tests run against fake repositories rather than Room, and Robolectric is
-not to be introduced. Where a rule cannot be tested without an Android class,
-the rule is first extracted into a plain function.
+Both test classes run against `FakeGoalRepository` and
+`FakeSetEntryRepository` in `app/src/test/java/.../fake/`, in memory
+implementations of the repository interfaces with no Room involved and no
+Robolectric introduced. Each view model is constructed inside `@Before`,
+after `Dispatchers.setMain` installs a test dispatcher, since `GoalViewModel`
+already launches a coroutine on `viewModelScope` from its `init` block and
+constructing it earlier, as a property initialiser, hits a missing main
+dispatcher before the test dispatcher is installed.
 
 The item is done when those cases are covered and acceptance criterion AC6
 moves to done.

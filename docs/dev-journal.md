@@ -98,4 +98,16 @@ DSL compatibility mode as the two flags already recorded there. A Pixel
 device was paired over wireless debugging afterwards, and `installDebug`
 put the app on it without incident, closing out B0's remaining criterion.
 
-The next items are B11, which finishes the AGP 9 migration, followed by B1.
+B1 was taken next instead. `GoalViewModelTest` and `LogEntryViewModelTest`
+cover the validation rules listed in the backlog item, run against two new in
+memory fakes, `FakeGoalRepository` and `FakeSetEntryRepository`, under
+`app/src/test/java/.../fake/`. The one problem worth recording: two
+`GoalViewModelTest` cases initially failed with the saved goal staying null,
+because the view model was built as a property initialiser, which runs before
+JUnit's `@Before` method. `GoalViewModel` already launches a coroutine on
+`viewModelScope` from its `init` block, so it hit a missing main dispatcher
+before `Dispatchers.setMain` had a chance to install the test one. Moving the
+view model's construction into `@Before`, after the dispatcher is set,
+resolved it. Acceptance criterion AC6 moved to done.
+
+The next item is B11, which finishes the AGP 9 migration.

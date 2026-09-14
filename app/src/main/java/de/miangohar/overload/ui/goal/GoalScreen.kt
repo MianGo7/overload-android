@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,8 +25,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -42,6 +49,8 @@ import de.miangohar.overload.domain.model.MuscleGroup
 import de.miangohar.overload.domain.model.TrainingGoal
 import de.miangohar.overload.domain.model.TrainingPhase
 import de.miangohar.overload.ui.common.label
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 /** Form for the individual goal: phase, block length and weekly set ranges. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,8 +62,10 @@ fun GoalScreen(
     onMinChanged: (MuscleGroup, String) -> Unit,
     onMaxChanged: (MuscleGroup, String) -> Unit,
     onPrefillRequested: () -> Unit,
+    onReminderTimeChanged: (LocalTime?) -> Unit,
     onSaveRequested: () -> Unit,
     onBack: () -> Unit,
+    notificationsBlocked: Boolean = false,
 ) {
     Scaffold(
         topBar = {
@@ -188,6 +199,48 @@ fun GoalScreen(
                 }
             }
 
+            Text(
+                text = stringResource(R.string.goal_reminder_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            var showTimePicker by remember { mutableStateOf(false) }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = state.reminderTime?.let {
+                        stringResource(R.string.goal_reminder_time, it.format(TIME_FORMATTER))
+                    } ?: stringResource(R.string.goal_reminder_off),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                OutlinedButton(onClick = { showTimePicker = true }) {
+                    Text(stringResource(R.string.goal_reminder_action_set))
+                }
+                if (state.reminderTime != null) {
+                    OutlinedButton(onClick = { onReminderTimeChanged(null) }) {
+                        Text(stringResource(R.string.goal_reminder_action_clear))
+                    }
+                }
+            }
+            if (state.reminderTime != null && notificationsBlocked) {
+                Text(
+                    text = stringResource(R.string.goal_reminder_permission_denied),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            if (showTimePicker) {
+                ReminderTimePickerDialog(
+                    initialTime = state.reminderTime ?: LocalTime.of(18, 0),
+                    onConfirm = { time ->
+                        onReminderTimeChanged(time)
+                        showTimePicker = false
+                    },
+                    onDismiss = { showTimePicker = false },
+                )
+            }
+
             state.errorRes?.let { errorRes ->
                 Text(
                     text = stringResource(errorRes),
@@ -204,4 +257,35 @@ fun GoalScreen(
             }
         }
     }
+}
+
+private val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+// TimePicker has no stable equivalent yet.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ReminderTimePickerDialog(
+    initialTime: LocalTime,
+    onConfirm: (LocalTime) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val state = rememberTimePickerState(
+        initialHour = initialTime.hour,
+        initialMinute = initialTime.minute,
+        is24Hour = true,
+    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = { onConfirm(LocalTime.of(state.hour, state.minute)) }) {
+                Text(stringResource(R.string.action_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        },
+        text = { TimePicker(state = state) },
+    )
 }

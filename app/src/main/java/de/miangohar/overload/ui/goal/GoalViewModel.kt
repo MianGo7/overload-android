@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 
 /** One editable row of the goal form. Empty fields mean the group is not tracked. */
 data class TargetRow(
@@ -32,6 +33,7 @@ data class GoalUiState(
     val phase: TrainingPhase = TrainingPhase.BULK,
     val blockLengthWeeks: Int = TrainingGoal.DEFAULT_BLOCK_LENGTH_WEEKS,
     val rows: List<TargetRow> = MuscleGroup.entries.map { TargetRow(it, "", "") },
+    val reminderTime: LocalTime? = null,
     @StringRes val errorRes: Int? = null,
     val isSaved: Boolean = false,
     val isLoading: Boolean = true,
@@ -53,10 +55,15 @@ class GoalViewModel(
                     phase = goal.phase,
                     blockLengthWeeks = goal.blockLengthWeeks,
                     rows = rowsOf(goal.targets),
+                    reminderTime = goal.reminderTime,
                     isLoading = false,
                 )
             }
         }
+    }
+
+    fun onReminderTimeChanged(time: LocalTime?) {
+        _uiState.update { it.copy(reminderTime = time, errorRes = null) }
     }
 
     fun onPhaseSelected(phase: TrainingPhase) {
@@ -117,6 +124,7 @@ class GoalViewModel(
                     phase = state.phase,
                     blockLengthWeeks = state.blockLengthWeeks,
                     targets = targets,
+                    reminderTime = state.reminderTime,
                 ),
             )
             _uiState.update { it.copy(isSaved = true, errorRes = null) }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status bar icon. Reuses the launcher's barbell silhouette, scaled down;
+     notification icons must be a flat white shape on a transparent background. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,51h40v6h-40z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M26,42h8v24h-8z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M74,42h8v24h-8z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,48h4v12h-4z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M84,48h4v12h-4z" />
+</vector>

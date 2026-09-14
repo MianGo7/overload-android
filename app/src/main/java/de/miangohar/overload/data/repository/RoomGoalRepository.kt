@@ -10,6 +10,7 @@ import de.miangohar.overload.domain.model.TrainingGoal
 import de.miangohar.overload.domain.repository.GoalRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import java.time.LocalTime
 
 /**
  * Room backed implementation of [GoalRepository].
@@ -28,6 +29,7 @@ class RoomGoalRepository(
                 phase = header?.phase ?: TrainingGoal.EMPTY.phase,
                 blockLengthWeeks = header?.blockLengthWeeks ?: TrainingGoal.EMPTY.blockLengthWeeks,
                 targets = targets.map { it.toDomain() },
+                reminderTime = header?.reminderTimeMinuteOfDay?.let { LocalTime.of(it / 60, it % 60) },
             )
         }
 
@@ -37,6 +39,7 @@ class RoomGoalRepository(
                 TrainingGoalEntity(
                     phase = goal.phase,
                     blockLengthWeeks = goal.blockLengthWeeks,
+                    reminderTimeMinuteOfDay = goal.reminderTime?.let { it.hour * 60 + it.minute },
                 ),
             )
             dao.clearTargets()

@@ -21,7 +21,7 @@ import de.miangohar.overload.data.local.entity.VolumeTargetEntity
         TrainingGoalEntity::class,
         VolumeTargetEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 @TypeConverters(Converters::class)

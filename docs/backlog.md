@@ -86,22 +86,30 @@ item's intent.
 
 ---
 
-## B4, logging reminder. Open.
+## B4, logging reminder. Done, 2026-09-14.
 
-An optional daily reminder, configured on the goal screen, is scheduled with
-WorkManager and accompanied by a receiver for `BOOT_COMPLETED` so that the
-schedule survives a restart. The notification opens `LogEntryActivity` through
-an explicit intent. The `POST_NOTIFICATIONS` runtime permission is handled on
-Android 13 and above, including the case in which the user declines it, and the
-reminder is skipped on a day where something has already been logged. The
-setting is stored with the goal rather than in a separate mechanism.
+The reminder time lives on the goal, `TrainingGoal.reminderTime`, null when
+off, scheduled through WorkManager and rescheduled by a `BOOT_COMPLETED`
+receiver, `androidx.work` added as ADR-0014 records, along with the schema
+migration the reminder time needed. `POST_NOTIFICATIONS` is requested when a
+time is set on Android 13 and above, with a visible message if denied. The
+reminder checks `LoggingReminderAdvisor.shouldRemind` before notifying, so a
+day already logged stays quiet, and the notification opens `LogEntryActivity`
+through an explicit intent.
 
-This item maps more directly onto units 5 and 6 of the course book than any
-other in the backlog, which makes it worth more to the transfer criterion than
-its size suggests. It introduces a dependency and therefore requires an ADR.
+Verified on device rather than assumed: the picked time schedules a job with
+the correct delay, firing it by adb was rejected as premature by WorkManager
+itself, a genuine bug then surfaced when rescheduling to a new time, since
+`ExistingPeriodicWorkPolicy.UPDATE` keeps the old schedule's anchor instead of
+the new delay. `CANCEL_AND_REENQUEUE` fixed it. Confirmed for real by setting
+a reminder a minute out and letting it fire on its own: the notification
+posted with the right text, and a full emulator reboot confirmed the receiver
+reschedules it.
 
-The item is done when the reminder fires, survives a reboot, opens the entry
-screen, and behaves correctly when the permission is denied.
+Also closes backlog item B7, which asked for exactly this the first time the
+schema changed: a real `Migration`, the exported schema, and a
+`MigrationTestHelper` test, all delivered as part of this item rather than
+separately.
 
 ---
 
@@ -132,14 +140,12 @@ emulator.
 
 ---
 
-## B7, Room migration and its test. Open, and urgent as soon as the schema changes.
+## B7, Room migration and its test. Done, 2026-09-14, delivered as part of B4.
 
-The first schema change ships with a real migration rather than a destructive
-one. The database version is raised, the `Migration` object is written, and the
-exported schema is committed under `app/schemas`. A test using
-`MigrationTestHelper` opens the previous schema, inserts a row, migrates, and
-asserts that the row survived. Destructive migration is not enabled under any
-circumstances.
+The first schema change, adding the reminder time to the goal, needed exactly
+this: `MIGRATION_1_2`, the exported schema for both versions, and a
+`MigrationTestHelper` test, `AppDatabaseMigrationTest`, verified on device.
+See B4 and ADR-0014.
 
 ---
 

@@ -47,6 +47,18 @@
     <string name="goal_action_save">Save goal</string>
     <string name="goal_error_range">Minimum must not be greater than maximum.</string>
     <string name="goal_error_number">Enter whole numbers only.</string>
+    <string name="goal_reminder_title">Daily logging reminder</string>
+    <string name="goal_reminder_off">Off</string>
+    <string name="goal_reminder_time">Reminder at %1$s</string>
+    <string name="goal_reminder_action_set">Set time</string>
+    <string name="goal_reminder_action_clear">Turn off</string>
+    <string name="goal_reminder_permission_denied">Notifications are turned off for this app, allow them in system settings to receive this reminder.</string>
+
+    <!-- Logging reminder notification -->
+    <string name="notification_channel_name">Logging reminder</string>
+    <string name="notification_channel_description">The optional daily reminder to log training sets</string>
+    <string name="reminder_notification_title">Time to log your sets</string>
+    <string name="reminder_notification_body">Nothing logged yet today.</string>
 
     <!-- Log entry screen -->
     <string name="log_title">Log sets</string>
@@ -73,6 +85,8 @@
 
     <!-- Shared -->
     <string name="action_back">Back</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_cancel">Cancel</string>
     <string name="phase_bulk">Bulk</string>
     <string name="phase_maintenance">Maintenance</string>
     <string name="phase_cut">Cut</string>

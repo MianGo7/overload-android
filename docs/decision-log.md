@@ -255,3 +255,44 @@ Dynamic colour only affects roles Material 3 itself manages, not custom
 semantic colours declared outside that scheme.
 
 Consequence: every status colour clears WCAG AA 4.5:1 in both themes.
+
+---
+
+## ADR-0014, WorkManager for the logging reminder, with a real schema migration. 2026-09-14, accepted.
+
+B4's optional daily reminder needs to survive process death and reboots, so
+`androidx.work:work-runtime-ktx` 2.11.2 was added, a new dependency. A
+`PeriodicWorkRequest` with a computed initial delay is used rather than
+`AlarmManager`, since WorkManager already handles doze mode and reboot
+persistence and the task description asks for it by name; the trade off is
+that the fire time is approximate, WorkManager batches work for battery
+reasons rather than guaranteeing the exact minute.
+
+Storing the chosen time required a real schema change, the first one this
+project has made: `TrainingGoalEntity` gained a nullable `reminder_time`
+column, minute of day as an integer, null meaning no reminder is set.
+`AppDatabase` moved to version 2 with `MIGRATION_1_2` adding the column,
+never a destructive migration, and the exported schema plus a
+`MigrationTestHelper` test cover it. This also satisfies backlog item B7,
+which existed to require exactly this the first time the schema changed.
+
+Rejected: `AlarmManager` with exact alarms, which needs the
+`SCHEDULE_EXACT_ALARM` permission and Android 12's stricter exact alarm
+rules for no benefit a training reminder needs, being a minute or two late
+does not matter.
+
+Consequence: a new dependency and the project's first Room migration, both
+exercised by tests rather than only by the schema export.
+
+Two problems surfaced only by testing on device rather than trusting the
+code. First, `room-testing` needs a newer `kotlinx-serialization` than
+`androidx.savedstate` strictly requires, and `work-runtime` bundles its own
+Room usage which strictly pins an older `kotlinx-coroutines-core` than
+`kotlinx-coroutines-test` needs; both were pinned higher with
+`resolutionStrategy.force` in `app/build.gradle.kts`, a plain constraint
+cannot outrank a strictly one. Second, rescheduling to a new time silently
+kept the old schedule: `ExistingPeriodicWorkPolicy.UPDATE` preserves an
+existing periodic work's anchor rather than a new `setInitialDelay`, found by
+setting a reminder a minute out and watching it fire almost a day late.
+`CANCEL_AND_REENQUEUE` replaces the schedule outright, which is what picking
+a new time is meant to do.

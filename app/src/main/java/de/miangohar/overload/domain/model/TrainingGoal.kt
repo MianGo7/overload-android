@@ -1,16 +1,21 @@
 package de.miangohar.overload.domain.model
 
+import java.time.LocalTime
+
 /**
  * The individual goal the user configures once and adjusts between mesocycles.
  *
  * @param phase the current mesocycle phase
  * @param blockLengthWeeks number of accumulation weeks before a deload is due
  * @param targets weekly set ranges, at most one entry per muscle group
+ * @param reminderTime time of day for the optional daily logging reminder,
+ *   null when the reminder is off
  */
 data class TrainingGoal(
     val phase: TrainingPhase,
     val blockLengthWeeks: Int,
     val targets: List<VolumeTarget>,
+    val reminderTime: LocalTime? = null,
 ) {
     init {
         require(blockLengthWeeks in MIN_BLOCK_LENGTH_WEEKS..MAX_BLOCK_LENGTH_WEEKS) {

@@ -3,6 +3,7 @@ package de.miangohar.overload.di
 import android.content.Context
 import androidx.room.Room
 import de.miangohar.overload.data.local.AppDatabase
+import de.miangohar.overload.data.local.MIGRATION_1_2
 import de.miangohar.overload.data.repository.RoomGoalRepository
 import de.miangohar.overload.data.repository.RoomSetEntryRepository
 import de.miangohar.overload.domain.repository.GoalRepository
@@ -22,6 +23,7 @@ class AppContainer(context: Context) {
 
     private val database: AppDatabase by lazy {
         Room.databaseBuilder(applicationContext, AppDatabase::class.java, AppDatabase.NAME)
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 

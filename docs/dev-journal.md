@@ -132,3 +132,18 @@ field, leaving it taller than the weight field next to it. Fixed generally,
 every side by side field row now matches its tallest member via
 `Row(Modifier.height(IntrinsicSize.Min))`, and the label itself was
 shortened to "RIR (optional)".
+
+B4, the logging reminder, closed the session, WorkManager added as ADR-0014
+records, together with the first real Room migration for the reminder time,
+which also closed B7. Adding WorkManager broke `connectedDebugAndroidTest`
+in a way `testDebugUnitTest` could never have caught: it bundles its own
+Room usage, which strictly pins an older `kotlinx-coroutines-core` than
+`kotlinx-coroutines-test` needs, and separately `room-testing` needs a newer
+`kotlinx-serialization` than `androidx.savedstate` strictly requires. Both
+needed `resolutionStrategy.force`. A second problem was a real logic bug,
+not a dependency clash: rescheduling to a new time kept firing at the old
+one, `ExistingPeriodicWorkPolicy.UPDATE` preserves the existing schedule's
+anchor rather than a new `setInitialDelay`. Found and confirmed fixed by
+setting a reminder a minute out and watching it actually fire, rather than
+trusting the code, `CANCEL_AND_REENQUEUE` was the correct policy. A full
+emulator reboot confirmed the boot receiver reschedules it afterwards.

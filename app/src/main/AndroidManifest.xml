@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:name=".OverloadApplication"
         android:allowBackup="true"
@@ -44,6 +47,14 @@
             android:exported="false"
             android:label="@string/week_detail_title"
             android:parentActivityName=".ui.history.HistoryActivity" />
+
+        <receiver
+            android:name=".reminder.BootCompletedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

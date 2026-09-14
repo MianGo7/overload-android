@@ -10,6 +10,9 @@ import de.miangohar.overload.domain.model.VolumeTarget
 /**
  * The goal header. Exactly one row exists, identified by [SINGLETON_ID],
  * because the app tracks a single active goal at a time.
+ *
+ * @param reminderTime minute of day for the logging reminder, null when off,
+ *   added in schema version 2, see `MIGRATION_1_2`
  */
 @Entity(tableName = TrainingGoalEntity.TABLE_NAME)
 data class TrainingGoalEntity(
@@ -18,6 +21,8 @@ data class TrainingGoalEntity(
     val phase: TrainingPhase,
     @ColumnInfo(name = "block_length_weeks")
     val blockLengthWeeks: Int,
+    @ColumnInfo(name = "reminder_time")
+    val reminderTimeMinuteOfDay: Int? = null,
 ) {
     companion object {
         const val TABLE_NAME = "training_goal"

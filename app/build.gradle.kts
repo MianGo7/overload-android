@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.work.runtime.ktx)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -103,4 +104,22 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+}
+
+// Two strict transitive pins fought the project's own catalogue versions,
+// both only surfacing once androidx.work was added. room-testing needs a
+// newer kotlinx-serialization than androidx.savedstate strictly requires, or
+// MigrationTestHelper fails to parse the schema with an AbstractMethodError.
+// work-runtime bundles its own Room usage, which strictly pins an older
+// kotlinx-coroutines-core than kotlinx-coroutines-test 1.11.0 needs, or
+// androidTest fails with a NoSuchMethodError in BuildersKt. AGP resolves the
+// app and androidTest classpaths consistently, so either mismatch reaches
+// both. A plain dependency constraint cannot outrank a strictly one, force
+// can, see ADR-0014.
+configurations.all {
+    resolutionStrategy.force(
+        "org.jetbrains.kotlinx:kotlinx-serialization-core:${libs.versions.kotlinxSerializationJson.get()}",
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:${libs.versions.kotlinxSerializationJson.get()}",
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core:${libs.versions.coroutines.get()}",
+    )
 }

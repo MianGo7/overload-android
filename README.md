@@ -11,8 +11,8 @@ DLBCSEMSE02, Mobile Software Engineering II.
 - Course: DLBCSEMSE02, Mobile Software Engineering II
 - Task: task 1, individual tracking app
 - Author: Mian Gohar Ehsan
-- Matriculation number: to be filled in
-- Tutor: to be filled in
+- Matriculation number: IU14147184
+- Tutor: Christian Remfert
 
 ## What the app does
 

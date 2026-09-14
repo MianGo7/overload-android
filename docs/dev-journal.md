@@ -174,3 +174,25 @@ dashboard's state afterwards timed out too: `DashboardViewModel.uiState` is
 a `stateIn` flow that only starts collecting once something subscribes to
 it, so the test has to move to the dashboard screen before waiting on its
 state, not after, or the wait polls a value that was never being computed.
+
+B9 and B10 were taken ahead of B8, on request, since neither is individually
+large. B9 covered five named edge cases. The dashboard's week now
+recomputes on every resume rather than only when a repository flow emits,
+since nothing else forces a recompute at midnight; a dashboard kept open and
+untouched through the exact rollover, never resumed, is accepted as a named
+residual limitation rather than solved, a persistent ticker for a once a
+week event was judged not worth it. Writing its first test exposed a gap in
+how this session had been testing `combine().stateIn(WhileSubscribed)` view
+models: reading `.value` cold, without a collector, never starts the
+upstream flow at all, `GoalViewModel`/`LogEntryViewModel`'s tests never hit
+this because both use a plain `MutableStateFlow`. A `launch(Dispatchers.Main)
+{ uiState.collect {} }` kept running for the rest of each test fixed it.
+Logging a future dated entry is now barred, the "later day" button disables
+at today, the past stays unbounded since retroactive logging is legitimate.
+The locale decimal separator case turned out to already be handled by the
+existing comma substitution, just under tested, three tests were added
+rather than new production code. `SetEntry` gained sets and reps ceilings,
+50 and 100, checked in its own `init` and again in `LogEntryViewModel`,
+mirroring how the existing lower bounds are already double guarded between
+the two. `WeekDetailScreen` gained the per entry list it never had, delete
+behind a confirmation dialog reusing `GoalScreen`'s existing dialog shape.

@@ -35,7 +35,11 @@ class WeekDetailActivity : ComponentActivity() {
                 )
                 val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-                WeekDetailScreen(state = state, onBack = { finish() })
+                WeekDetailScreen(
+                    state = state,
+                    onDeleteRequested = viewModel::onDeleteRequested,
+                    onBack = { finish() },
+                )
             }
         }
     }

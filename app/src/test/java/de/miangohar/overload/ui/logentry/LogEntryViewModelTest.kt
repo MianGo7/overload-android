@@ -2,6 +2,7 @@ package de.miangohar.overload.ui.logentry
 
 import de.miangohar.overload.R
 import de.miangohar.overload.domain.model.MuscleGroup
+import de.miangohar.overload.domain.model.SetEntry
 import de.miangohar.overload.fake.FakeSetEntryRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -10,9 +11,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LogEntryViewModelTest {
@@ -92,6 +95,70 @@ class LogEntryViewModelTest {
         viewModel.onSaveRequested()
 
         assertEquals(62.5, repository.added.single().weightKg, 0.0001)
+    }
+
+    @Test
+    fun `a period is accepted as a decimal separator`() {
+        fillValidEntry()
+        viewModel.onWeightChanged("62.5")
+
+        viewModel.onSaveRequested()
+
+        assertEquals(62.5, repository.added.single().weightKg, 0.0001)
+    }
+
+    @Test
+    fun `a value with both a thousands separator and a comma is rejected rather than corrupted`() {
+        fillValidEntry()
+        viewModel.onWeightChanged("1.234,5")
+
+        viewModel.onSaveRequested()
+
+        assertEquals(R.string.log_error_required, viewModel.uiState.value.errorRes)
+        assertTrue(repository.added.isEmpty())
+    }
+
+    @Test
+    fun `sets above the plausible ceiling are rejected`() {
+        fillValidEntry()
+        viewModel.onSetsChanged((SetEntry.MAX_PLAUSIBLE_SETS + 1).toString())
+
+        viewModel.onSaveRequested()
+
+        assertEquals(R.string.log_error_required, viewModel.uiState.value.errorRes)
+        assertTrue(repository.added.isEmpty())
+    }
+
+    @Test
+    fun `reps above the plausible ceiling are rejected`() {
+        fillValidEntry()
+        viewModel.onRepsChanged((SetEntry.MAX_PLAUSIBLE_REPS + 1).toString())
+
+        viewModel.onSaveRequested()
+
+        assertEquals(R.string.log_error_required, viewModel.uiState.value.errorRes)
+        assertTrue(repository.added.isEmpty())
+    }
+
+    @Test
+    fun `the date cannot be shifted into the future`() {
+        val today = viewModel.uiState.value.date
+        assertFalse(viewModel.uiState.value.canShiftToLaterDay)
+
+        viewModel.onDateShifted(1L)
+
+        assertEquals(today, viewModel.uiState.value.date)
+    }
+
+    @Test
+    fun `the date can be shifted later again after being shifted earlier`() {
+        viewModel.onDateShifted(-1L)
+        assertTrue(viewModel.uiState.value.canShiftToLaterDay)
+
+        viewModel.onDateShifted(1L)
+
+        assertEquals(LocalDate.now(), viewModel.uiState.value.date)
+        assertFalse(viewModel.uiState.value.canShiftToLaterDay)
     }
 
     @Test

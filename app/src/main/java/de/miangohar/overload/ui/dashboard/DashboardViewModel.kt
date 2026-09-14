@@ -16,10 +16,12 @@ import de.miangohar.overload.domain.model.TrainingWeek
 import de.miangohar.overload.domain.model.WeeklyProgress
 import de.miangohar.overload.domain.repository.GoalRepository
 import de.miangohar.overload.domain.repository.SetEntryRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Clock
 import java.time.LocalDate
@@ -60,10 +62,15 @@ class DashboardViewModel(
     private val clock: Clock = Clock.systemDefaultZone(),
 ) : ViewModel() {
 
+    // A week's dashboard has nothing that naturally re-emits at midnight, so
+    // a resume is used to notice a rolled over week; see onResumed().
+    private val resumeSignal = MutableStateFlow(0)
+
     val uiState: StateFlow<DashboardUiState> = combine(
         setEntryRepository.observeAll(),
         goalRepository.observeGoal(),
-    ) { entries, goal ->
+        resumeSignal,
+    ) { entries, goal, _ ->
         val week = TrainingWeek.containing(LocalDate.now(clock))
         DashboardUiState(
             week = week,
@@ -91,6 +98,19 @@ class DashboardViewModel(
             goalRepository.saveGoal(seedData.goal)
             seedData.entries.forEach { entry -> setEntryRepository.add(entry) }
         }
+    }
+
+    /**
+     * Re-evaluates the current week. Neither repository flow emits on its
+     * own at midnight, so a dashboard left open across the boundary would
+     * otherwise keep showing the week it opened on; the activity calls this
+     * on every resume, which covers reopening the app spanning midnight.
+     * A dashboard kept continuously in the foreground, never resumed,
+     * through the exact rollover is a residual, accepted limitation, see
+     * the dev journal.
+     */
+    fun onResumed() {
+        resumeSignal.update { it + 1 }
     }
 
     companion object {

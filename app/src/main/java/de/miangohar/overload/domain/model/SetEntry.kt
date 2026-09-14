@@ -30,7 +30,9 @@ data class SetEntry(
     init {
         require(exerciseName.isNotBlank()) { "exerciseName must not be blank" }
         require(sets > 0) { "sets must be greater than zero" }
+        require(sets <= MAX_PLAUSIBLE_SETS) { "sets must not exceed $MAX_PLAUSIBLE_SETS" }
         require(reps > 0) { "reps must be greater than zero" }
+        require(reps <= MAX_PLAUSIBLE_REPS) { "reps must not exceed $MAX_PLAUSIBLE_REPS" }
         require(weightKg >= 0.0) { "weightKg must not be negative" }
         require(rir == null || rir >= 0) { "rir must not be negative" }
         require(primaryMuscle !in secondaryMuscles) {
@@ -44,5 +46,13 @@ data class SetEntry(
 
     companion object {
         const val NO_ID = 0L
+
+        /**
+         * Upper bounds on a single block of straight sets, generous above any
+         * realistic single session, so a mistyped figure such as 999 cannot
+         * distort a week's totals or its progress indicators.
+         */
+        const val MAX_PLAUSIBLE_SETS = 50
+        const val MAX_PLAUSIBLE_REPS = 100
     }
 }

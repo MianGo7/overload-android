@@ -178,19 +178,22 @@ understood without the report open, satisfying acceptance criterion AC8.
 
 ---
 
-## B9, edge cases. Open.
+## B9, edge cases. Done, 2026-09-14.
 
-Several cases remain unhandled and each is worth a sentence in the evaluation
-chapter. The week may roll over at midnight while the application is open, in
-which case the dashboard should move to the new week. Entries may be dated in
-the future or far in the past. Locale specific decimal separators appear in the
-weight field. Implausible input such as 999 sets affects the progress
-indicator. Deleting an entry is supported by the repository but exposed by no
-screen.
-
-Each case is either handled and covered by a test, or recorded in the journal
-as a known limitation with a reason. A limitation that is named is worth more
-in the report than a defect that is silent.
+Taken ahead of B8, along with B10, see the journal. `DashboardViewModel`
+recomputes the current week on every resume rather than only when a
+repository flow emits, since neither emits on its own at midnight; a
+dashboard left continuously in the foreground through the exact rollover,
+never resumed, is a named residual limitation rather than a solved case.
+`LogEntryViewModel.onDateShifted` now clamps at today, the past stays
+unbounded since retroactive logging is legitimate. The comma decimal
+separator case was already handled, just under tested, three more cases
+were added rather than new production code. `SetEntry` gained
+`MAX_PLAUSIBLE_SETS`/`MAX_PLAUSIBLE_REPS` ceilings, checked in its own
+`init` and again in `LogEntryViewModel`, the same double guard shape the
+lower bounds already used. `WeekDetailScreen` gained a per entry list with
+a delete action behind a confirmation dialog, the repository already
+supported deletion, no screen exposed it.
 
 ---
 

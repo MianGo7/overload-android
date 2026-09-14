@@ -87,7 +87,7 @@ fun LogEntryScreen(
                     text = formatDate(state.date),
                     style = MaterialTheme.typography.titleMedium,
                 )
-                OutlinedButton(onClick = { onDateShifted(1L) }) {
+                OutlinedButton(onClick = { onDateShifted(1L) }, enabled = state.canShiftToLaterDay) {
                     Text(stringResource(R.string.log_date_later))
                 }
             }

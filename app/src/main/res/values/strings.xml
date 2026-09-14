@@ -86,11 +86,17 @@
     <string name="history_trend_summary_plain">This week: %1$s sets</string>
     <string name="week_detail_title">Week detail</string>
     <string name="week_detail_empty">Nothing logged for this week.</string>
+    <string name="week_detail_entries_title">Logged sets</string>
+    <string name="week_detail_entry_summary">%1$d sets × %2$d reps at %3$s kg</string>
+    <string name="week_detail_delete_entry">Delete %1$s</string>
+    <string name="week_detail_delete_confirm_title">Delete this entry?</string>
+    <string name="week_detail_delete_confirm_message">%1$s will be removed from this week\'s log.</string>
 
     <!-- Shared -->
     <string name="action_back">Back</string>
     <string name="action_confirm">Confirm</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
     <string name="phase_bulk">Bulk</string>
     <string name="phase_maintenance">Maintenance</string>
     <string name="phase_cut">Cut</string>

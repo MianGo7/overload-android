@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Clock
 import java.time.LocalDate
 
 data class LogEntryUiState(
@@ -27,6 +28,7 @@ data class LogEntryUiState(
     val reps: String = "10",
     val weightKg: String = "",
     val rir: String = "",
+    val canShiftToLaterDay: Boolean = true,
     @StringRes val errorRes: Int? = null,
     val isSaved: Boolean = false,
 )
@@ -37,9 +39,12 @@ data class LogEntryUiState(
  */
 class LogEntryViewModel(
     private val setEntryRepository: SetEntryRepository,
+    private val clock: Clock = Clock.systemDefaultZone(),
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LogEntryUiState())
+    private val _uiState = MutableStateFlow(
+        LogEntryUiState(date = LocalDate.now(clock), canShiftToLaterDay = false),
+    )
     val uiState: StateFlow<LogEntryUiState> = _uiState.asStateFlow()
 
     fun onExerciseNameChanged(value: String) = updateState { it.copy(exerciseName = value) }
@@ -52,7 +57,16 @@ class LogEntryViewModel(
 
     fun onRirChanged(value: String) = updateState { it.copy(rir = value.filter(Char::isDigit)) }
 
-    fun onDateShifted(days: Long) = updateState { it.copy(date = it.date.plusDays(days)) }
+    /**
+     * A workout cannot be logged before it happens, so a shift into the
+     * future is clamped at today; the past stays unbounded since logging a
+     * missed session retroactively is legitimate.
+     */
+    fun onDateShifted(days: Long) = updateState {
+        val today = LocalDate.now(clock)
+        val shifted = it.date.plusDays(days)
+        it.copy(date = if (shifted > today) today else shifted)
+    }
 
     fun onPrimaryMuscleSelected(muscleGroup: MuscleGroup) = updateState {
         it.copy(
@@ -78,8 +92,8 @@ class LogEntryViewModel(
         val weight = state.weightKg.replace(',', '.').toDoubleOrNull()
 
         if (state.exerciseName.isBlank() ||
-            sets == null || sets <= 0 ||
-            reps == null || reps <= 0 ||
+            sets == null || sets <= 0 || sets > SetEntry.MAX_PLAUSIBLE_SETS ||
+            reps == null || reps <= 0 || reps > SetEntry.MAX_PLAUSIBLE_REPS ||
             weight == null || weight < 0.0
         ) {
             _uiState.update { it.copy(errorRes = R.string.log_error_required) }
@@ -105,7 +119,10 @@ class LogEntryViewModel(
 
     /** Applies a change to the form state and clears any previous error. */
     private fun updateState(transform: (LogEntryUiState) -> LogEntryUiState) {
-        _uiState.update { transform(it).copy(errorRes = null) }
+        _uiState.update { state ->
+            val next = transform(state).copy(errorRes = null)
+            next.copy(canShiftToLaterDay = next.date < LocalDate.now(clock))
+        }
     }
 
     companion object {

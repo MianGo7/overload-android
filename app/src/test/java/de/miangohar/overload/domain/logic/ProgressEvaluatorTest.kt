@@ -95,4 +95,37 @@ class ProgressEvaluatorTest {
 
         assertEquals(0.0, progress.overallCompletion, delta)
     }
+
+    @Test
+    fun `target band for a single muscle group uses its own range`() {
+        val goal = TestFixtures.goal(TestFixtures.target(MuscleGroup.CHEST, minSets = 10, maxSets = 16))
+
+        val band = ProgressEvaluator.targetBand(goal, MuscleGroup.CHEST)
+
+        assertEquals(10.0..16.0, band)
+    }
+
+    @Test
+    fun `target band is null for a muscle group without a target`() {
+        val goal = TestFixtures.goal(TestFixtures.target(MuscleGroup.CHEST, minSets = 10, maxSets = 16))
+
+        assertEquals(null, ProgressEvaluator.targetBand(goal, MuscleGroup.BACK))
+    }
+
+    @Test
+    fun `target band with no muscle group selected sums every tracked target`() {
+        val goal = TestFixtures.goal(
+            TestFixtures.target(MuscleGroup.CHEST, minSets = 10, maxSets = 16),
+            TestFixtures.target(MuscleGroup.BACK, minSets = 12, maxSets = 20),
+        )
+
+        val band = ProgressEvaluator.targetBand(goal, muscleGroup = null)
+
+        assertEquals(22.0..36.0, band)
+    }
+
+    @Test
+    fun `target band is null when nothing is tracked at all`() {
+        assertEquals(null, ProgressEvaluator.targetBand(TestFixtures.goal(), muscleGroup = null))
+    }
 }

@@ -80,6 +80,10 @@
     <string name="history_empty">No completed weeks yet.</string>
     <string name="history_week">Week of %1$s</string>
     <string name="history_deload">Deload week</string>
+    <string name="history_trend_title">Weekly volume trend</string>
+    <string name="history_trend_overall">Overall</string>
+    <string name="history_trend_summary_ranged">This week: %1$s of %2$d to %3$d sets</string>
+    <string name="history_trend_summary_plain">This week: %1$s sets</string>
     <string name="week_detail_title">Week detail</string>
     <string name="week_detail_empty">Nothing logged for this week.</string>
 

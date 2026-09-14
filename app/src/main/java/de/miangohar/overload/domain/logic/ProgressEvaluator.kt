@@ -1,5 +1,6 @@
 package de.miangohar.overload.domain.logic
 
+import de.miangohar.overload.domain.model.MuscleGroup
 import de.miangohar.overload.domain.model.MuscleVolume
 import de.miangohar.overload.domain.model.SetEntry
 import de.miangohar.overload.domain.model.TrainingGoal
@@ -73,5 +74,20 @@ object ProgressEvaluator {
         target == null -> 0.0
         target.minSets == 0 -> 1.0
         else -> (completedSets / target.minSets).coerceIn(0.0, 1.0)
+    }
+
+    /**
+     * The range to draw behind a volume trend. A single muscle group uses its
+     * own target, null when it has none. With no muscle group selected the
+     * range sums every tracked target, since there is no single figure for
+     * "overall" hard sets otherwise, null when nothing is tracked at all.
+     */
+    fun targetBand(goal: TrainingGoal, muscleGroup: MuscleGroup?): ClosedFloatingPointRange<Double>? {
+        if (muscleGroup != null) {
+            val target = goal.targetFor(muscleGroup) ?: return null
+            return target.minSets.toDouble()..target.maxSets.toDouble()
+        }
+        if (goal.targets.isEmpty()) return null
+        return goal.targets.sumOf { it.minSets }.toDouble()..goal.targets.sumOf { it.maxSets }.toDouble()
     }
 }

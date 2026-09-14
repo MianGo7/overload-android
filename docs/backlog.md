@@ -113,17 +113,24 @@ separately.
 
 ---
 
-## B5, weekly volume trend. Open.
+## B5, weekly volume trend. Done, 2026-09-14.
 
-A chart shows accumulated weekly sets over the last eight to twelve weeks,
-overall and for a selected muscle group, with the target range drawn as a band
-behind the line so that the chart answers the same question as the dashboard.
-It is drawn with a Compose `Canvas` in preference to a charting dependency; a
-dependency would require an ADR. A textual summary of the trend accompanies the
-chart for accessibility, and the colours are verified in both themes.
+`VolumeCalculator.recentWeeklyTotals` builds a fixed twelve week window,
+zero filled, overall or for one muscle group; `ProgressEvaluator.targetBand`
+picks the range to draw behind it, a single target's range for one muscle
+group, every tracked target summed for "overall" since there is no single
+figure for that otherwise. `VolumeTrendChart` draws both with Compose
+`Canvas`, ADR-0015, sits above the existing History screen's week list with
+an "Overall" plus per muscle group `FilterChip` row rather than a new
+screen, `docs/concept.md` names no separate trend screen. The canvas is
+`clearAndSetSemantics {}`, a text summary beside it carries the current
+week's figure for a screen reader.
 
-The item is done when the chart renders correctly with one week of data and
-with twelve.
+Verified on device: cleared app data and logged a single entry, the chart
+renders one real point in an otherwise zero filled window with no band, no
+goal set; seeded demo data gave the full window with the deload dip and a
+band, checked overall and filtered to a muscle group; both light and dark
+theme read correctly.
 
 ---
 

@@ -296,3 +296,26 @@ existing periodic work's anchor rather than a new `setInitialDelay`, found by
 setting a reminder a minute out and watching it fire almost a day late.
 `CANCEL_AND_REENQUEUE` replaces the schedule outright, which is what picking
 a new time is meant to do.
+
+---
+
+## ADR-0015, Compose Canvas for the volume trend chart, no charting library. 2026-09-14, accepted.
+
+B5 needed a chart of weekly volume against the target band. Drawn directly
+with Compose `Canvas` primitives, `drawLine`, `drawRect` and `drawCircle`,
+rather than adding a charting dependency, since the shape needed, a line
+with a band behind it over a fixed twelve week window, does not warrant the
+weight or the licence and maintenance surface of a library, and the task
+description names `Canvas` as the preferred approach. The chart carries no
+semantics of its own, `clearAndSetSemantics {}` marks it decorative, a plain
+text summary of the current week against the band sits beside it for screen
+readers, following the same pattern ADR-0013 used for accessible custom
+drawing.
+
+Rejected: a charting dependency such as Vico or MPAndroidChart, which would
+need its own ADR under the dependency rule and brings far more than a single
+line and band chart requires.
+
+Consequence: the chart is a small, fully owned composable with no external
+API to track for breaking changes, at the cost of writing the axis and
+scaling by hand.

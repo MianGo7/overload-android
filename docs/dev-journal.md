@@ -147,3 +147,17 @@ anchor rather than a new `setInitialDelay`. Found and confirmed fixed by
 setting a reminder a minute out and watching it actually fire, rather than
 trusting the code, `CANCEL_AND_REENQUEUE` was the correct policy. A full
 emulator reboot confirmed the boot receiver reschedules it afterwards.
+
+B5, the weekly volume trend chart, followed the same rule first, then wiring,
+then interface sequence. `VolumeCalculator.recentWeeklyTotals` and
+`ProgressEvaluator.targetBand` were written and unit tested before any
+Compose code existed. The chart itself is drawn with plain `Canvas` calls
+rather than a charting dependency, ADR-0015, and lives on the existing
+History screen behind an "Overall" plus muscle group filter row, since
+`docs/concept.md` names no separate trend screen and adding one would have
+been an unasked scope change. Confirmed on device rather than assumed: app
+data cleared and a single entry logged showed one real point in an otherwise
+zero filled window with no band drawn, since no goal was set; the seeded
+demonstration history then showed the full window including the deload dip
+and a band, checked both overall and filtered to a muscle group, and again
+in dark theme.

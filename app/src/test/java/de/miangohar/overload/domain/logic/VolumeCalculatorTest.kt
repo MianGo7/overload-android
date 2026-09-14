@@ -100,4 +100,52 @@ class VolumeCalculatorTest {
         assertEquals(3.0, totals.first().totalSets, delta)
         assertEquals(2.0, totals.last().totalSets, delta)
     }
+
+    @Test
+    fun `recent weekly totals cover exactly weekCount weeks ending at the current week`() {
+        val currentWeek = TestFixtures.WEEK
+
+        val totals = VolumeCalculator.recentWeeklyTotals(emptyList(), currentWeek, weekCount = 12)
+
+        assertEquals(12, totals.size)
+        assertEquals(currentWeek, totals.last().week)
+        assertEquals(currentWeek.startDate.minusWeeks(11), totals.first().week.startDate)
+    }
+
+    @Test
+    fun `recent weekly totals fill weeks without any entry with zero`() {
+        val entries = listOf(TestFixtures.entry(date = TestFixtures.MONDAY, sets = 4))
+
+        val totals = VolumeCalculator.recentWeeklyTotals(entries, TestFixtures.WEEK, weekCount = 3)
+
+        assertEquals(listOf(0.0, 0.0, 4.0), totals.map { it.totalSets })
+    }
+
+    @Test
+    fun `recent weekly totals filter to a single muscle group when given one`() {
+        val entries = listOf(
+            TestFixtures.entry(
+                date = TestFixtures.MONDAY,
+                primary = MuscleGroup.CHEST,
+                secondary = setOf(MuscleGroup.TRICEPS),
+                sets = 4,
+            ),
+        )
+
+        val chest = VolumeCalculator.recentWeeklyTotals(
+            entries,
+            TestFixtures.WEEK,
+            weekCount = 1,
+            muscleGroup = MuscleGroup.CHEST,
+        )
+        val triceps = VolumeCalculator.recentWeeklyTotals(
+            entries,
+            TestFixtures.WEEK,
+            weekCount = 1,
+            muscleGroup = MuscleGroup.TRICEPS,
+        )
+
+        assertEquals(4.0, chest.single().totalSets, delta)
+        assertEquals(2.0, triceps.single().totalSets, delta)
+    }
 }

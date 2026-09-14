@@ -23,6 +23,7 @@ class HistoryActivity : ComponentActivity() {
 
                 HistoryScreen(
                     state = state,
+                    onTrendMuscleGroupSelected = viewModel::onTrendMuscleGroupSelected,
                     onOpenWeek = { week ->
                         val intent = Intent(this, WeekDetailActivity::class.java)
                             .putExtra(

@@ -53,6 +53,32 @@ object VolumeCalculator {
                 WeeklyTotal(week, totalSets(weekEntries, week))
             }
 
+    /**
+     * Weekly totals for the [weekCount] weeks up to and including
+     * [currentWeek], oldest first, one entry per week even where nothing was
+     * logged, so a trend chart never has to skip a gap in the history.
+     *
+     * @param muscleGroup a single tracked muscle group, or null for the
+     *   total across every muscle group
+     */
+    fun recentWeeklyTotals(
+        entries: List<SetEntry>,
+        currentWeek: TrainingWeek,
+        weekCount: Int,
+        muscleGroup: MuscleGroup? = null,
+    ): List<WeeklyTotal> {
+        require(weekCount > 0) { "weekCount must be positive" }
+        val weeks = generateSequence(currentWeek) { it.previous() }.take(weekCount).toList().asReversed()
+        return weeks.map { week ->
+            val sets = if (muscleGroup == null) {
+                totalSets(entries, week)
+            } else {
+                weeklyVolume(entries, week)[muscleGroup] ?: 0.0
+            }
+            WeeklyTotal(week, sets)
+        }
+    }
+
     private fun entriesIn(entries: List<SetEntry>, week: TrainingWeek): List<SetEntry> =
         entries.filter { it.date in week }
 }

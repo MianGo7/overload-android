@@ -6,7 +6,7 @@ import java.time.temporal.TemporalAdjusters
 
 /**
  * A training week, always starting on a Monday so that weekly volume is
- * comparable across the whole history.
+ * comparable across the whole history, see ADR-0007.
  */
 data class TrainingWeek(val startDate: LocalDate) : Comparable<TrainingWeek> {
 

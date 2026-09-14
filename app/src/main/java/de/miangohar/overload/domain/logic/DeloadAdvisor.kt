@@ -33,13 +33,13 @@ data class DeloadRecommendation(
  *
  * A week counts as a deload when its total volume drops to at most half of the
  * trailing average of the weeks before it, which matches the common practice of
- * halving sets while keeping the load. The advisor never looks at calendar
- * gaps, only at logged volume, so a week without any entry is treated as a
- * light week rather than as missing data.
+ * halving sets while keeping the load, see ADR-0017. The advisor never looks
+ * at calendar gaps, only at logged volume, so a week without any entry is
+ * treated as a light week rather than as missing data.
  */
 object DeloadAdvisor {
 
-    /** Share of the trailing average at or below which a week counts as a deload. */
+    /** Share of the trailing average at or below which a week counts as a deload, ADR-0017. */
     const val DELOAD_VOLUME_RATIO = 0.5
 
     /** Number of preceding weeks the trailing average is taken over. */

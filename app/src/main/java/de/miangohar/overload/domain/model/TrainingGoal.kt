@@ -30,6 +30,10 @@ data class TrainingGoal(
         targets.firstOrNull { it.muscleGroup == muscleGroup }
 
     companion object {
+        /**
+         * Bounds on an accumulation block, three to eight weeks, the common
+         * range before fatigue outweighs further gains and a deload is due.
+         */
         const val MIN_BLOCK_LENGTH_WEEKS = 3
         const val MAX_BLOCK_LENGTH_WEEKS = 8
         const val DEFAULT_BLOCK_LENGTH_WEEKS = 5

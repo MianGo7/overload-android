@@ -16,7 +16,7 @@ traceability the quality criterion of the grade asks for.
 | AC5 | The app implements several Android activities | scaffolded | 5 activities, see `AndroidManifest.xml` |
 | AC6 | The app is tested using unit tests | done | `app/src/test` for domain logic and the two form view models against fake repositories; `app/src/androidTest` for Room queries and migrations, plus one instrumented Compose test, `MainFlowTest`, covering the goal, log entry and dashboard screens together against a real in memory database |
 | AC7 | The app is easy to use and follows Material Design and the Android app quality guidelines | done | Material 3 theme with checked light and dark contrast, ADR-0013; content descriptions, empty and loading states, plural resources, verified touch targets, 200 percent text scale and landscape |
-| AC8 | The source code documentation is appropriate | partly | KDoc on public domain and data types |
+| AC8 | The source code documentation is appropriate | done | KDoc on every public domain type and non obvious function, explaining why rather than restating the code; the constants that encode a domain decision, the half set credit, the deload ratio, the Monday week start and the accumulation block length, each reference the ADR or carry the reasoning inline |
 | AC9 | All code, resources and configuration needed to build, test and deploy are in a GitHub repository, link in the report | open | repository is local only so far |
 
 ## Report deliverables from the task

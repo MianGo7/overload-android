@@ -353,3 +353,28 @@ Consequence: a new manifest `<provider>` entry and `res/xml/file_paths.xml`,
 both required for `FileProvider` regardless of which sharing mechanism was
 chosen, and a share sheet that works with whatever the receiving device has
 installed rather than one fixed destination.
+
+---
+
+## ADR-0017, a week counts as a deload at half the trailing three week average. 2026-09-14, accepted.
+
+The dashboard needs to notice a deload the user has already taken, not only
+recommend one that is due, so `DeloadAdvisor` needs its own rule for what a
+deload week looks like from logged volume alone. A week counts as a deload
+when its total falls to at most half of the trailing average of the three
+weeks before it, expressed as `DELOAD_VOLUME_RATIO` and `TRAILING_WEEKS` in
+`DeloadAdvisor`. One half matches the common practice of halving sets for a
+deload; three weeks is enough to smooth over one unusually light or heavy
+week without letting a distant block still weigh on the average.
+
+Rejected: comparing against only the single preceding week, which one
+unusually light or heavy week would throw off; comparing against the whole
+training history, which would dilute a recent trend and let an early deload
+keep suppressing detection long after; an explicit user marked deload
+toggle, which adds a manual step the task does not ask for when the volume
+already logged infers it reliably.
+
+Consequence: the first weeks of a fresh history have no trailing average to
+compare against and therefore never count as a deload, which
+`DeloadAdvisor.isDeloadWeek` documents at the point that matters rather than
+only here.

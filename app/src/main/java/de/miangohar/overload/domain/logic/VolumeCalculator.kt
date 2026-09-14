@@ -11,13 +11,14 @@ import de.miangohar.overload.domain.model.WeeklyTotal
  * A hard set counts once for the muscle group the exercise trains directly and
  * only half for the groups it trains indirectly. Counting indirect work at a
  * fraction is a common convention in hypertrophy programming and avoids both
- * ignoring it and double counting it.
+ * ignoring it and double counting it, see ADR-0006.
  *
  * The object holds no state and touches no Android API, so every rule in here
  * is covered by plain JVM unit tests.
  */
 object VolumeCalculator {
 
+    /** Weighting of a set for the muscle group it trains directly and indirectly, ADR-0006. */
     const val PRIMARY_SET_CREDIT = 1.0
     const val SECONDARY_SET_CREDIT = 0.5
 

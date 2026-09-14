@@ -164,17 +164,21 @@ See B4 and ADR-0014.
 
 ---
 
-## B8, source code documentation pass. Open.
+## B8, source code documentation pass. Done, 2026-09-14.
 
-The documentation must carry the reasoning rather than restate the code. Every
-public type and every non obvious public function receives KDoc explaining why
-it exists and which invariants it maintains. Constants that encode a domain
-decision, such as the half set credit and the deload ratio, name the decision
-and refer to the corresponding ADR. Comments that merely repeat the line below
-them are removed.
-
-The item is done when the domain layer can be read from beginning to end and
-understood without the report open, satisfying acceptance criterion AC8.
+Taken last, after B9 and B10, on request. Read through in full rather than
+spot checked: most of the domain layer already carried its reasoning from
+earlier items, so the pass mainly added the missing ADR references rather
+than new prose. The half set credit in `VolumeCalculator` and the Monday
+week start in `TrainingWeek` already had an ADR, 0006 and 0007, neither was
+cited from the code; both now are. The deload ratio in `DeloadAdvisor` had
+no ADR at all despite being named in this same item as an example, so it
+got one, ADR-0017, covering the ratio and the trailing window together
+along with their rejected alternatives. The accumulation block length in
+`TrainingGoal` and `DefaultTargets.forPhase` were under documented rather
+than missing an ADR, both gained a short KDoc explaining the reasoning
+instead. No comment in the domain layer merely repeated the line below it,
+none needed removing.
 
 ---
 

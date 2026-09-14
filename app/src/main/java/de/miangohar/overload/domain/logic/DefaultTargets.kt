@@ -29,6 +29,7 @@ object DefaultTargets {
         MuscleGroup.FOREARMS to 4..12,
     )
 
+    /** Starting ranges for [phase], scaled down for maintenance and further for a cut. */
     fun forPhase(phase: TrainingPhase): List<VolumeTarget> {
         val factor = when (phase) {
             TrainingPhase.BULK -> 1.0

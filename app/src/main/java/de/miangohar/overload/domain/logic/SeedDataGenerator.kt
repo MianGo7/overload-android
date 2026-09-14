@@ -30,6 +30,8 @@ object SeedDataGenerator {
 
     private const val BASELINE_WEEKS = 2
     private const val POST_DELOAD_WEEKS = 4
+
+    /** Comfortably below [DeloadAdvisor.DELOAD_VOLUME_RATIO], so the generated week is detected as one. */
     private const val DELOAD_SCALE = 0.3
 
     private data class ExerciseTemplate(

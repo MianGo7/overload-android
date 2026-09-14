@@ -206,3 +206,18 @@ for this pass. Verified on the emulator: the share sheet listed
 `overload-log.csv`, and the file pulled from the cache directory read back
 correctly, RFC 4180 quoting intact, an entry deleted earlier in the same
 session correctly missing from its own week while still present in another.
+
+B8 closed the day, taken last on request. The whole domain layer was read
+end to end rather than spot checked, against acceptance criterion AC8's own
+bar: readable without the report open. Most of it already carried its
+reasoning inline from earlier items; the gap was almost entirely missing
+ADR citations rather than missing explanations. `VolumeCalculator`'s half
+set credit and `TrainingWeek`'s Monday start both already had an ADR, 0006
+and 0007, that the code itself never pointed back to. The deload ratio in
+`DeloadAdvisor` was the one genuine gap, no ADR existed for it at all, so
+ADR-0017 was written for it and the trailing window it is paired with,
+including the alternatives rejected, a single preceding week and the whole
+history. `TrainingGoal`'s block length bounds and
+`DefaultTargets.forPhase` were thin rather than missing, both gained a
+short KDoc. No restating comment was found anywhere in the domain layer to
+remove.

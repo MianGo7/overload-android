@@ -1,0 +1,64 @@
+@startuml activity-navigation
+' Chapter 3, Software design, section 3.3: navigation between activities.
+' Renders with any PlantUML processor, for example
+' https://www.plantuml.com/plantuml or a local toolchain:
+' plantuml docs/diagrams/activity-navigation.puml
+' Source of the facts shown here: app/src/main/AndroidManifest.xml, the five
+' activity classes under app/src/main/java/de/miangohar/overload/ui, and
+' docs/decision-log.md ADR-0002.
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #F5F5F5
+  BorderColor #444444
+}
+skinparam note {
+  BackgroundColor #FFFBE6
+  BorderColor #B8A000
+}
+
+title Overload, navigation between the five activities
+
+state "DashboardActivity\n<b>launcher</b>, exported" as Dashboard
+state "GoalActivity" as Goal
+state "LogEntryActivity" as LogEntry
+state "HistoryActivity" as History
+state "WeekDetailActivity" as WeekDetail
+state "system notification\n(outside the five activities)" as Notification
+
+Dashboard -[#000000]-> Goal : explicit Intent
+Dashboard -[#000000]-> LogEntry : explicit Intent
+Dashboard -[#000000]-> History : explicit Intent
+History -[#000000]-> WeekDetail : explicit Intent\n+ EXTRA_WEEK_START_EPOCH_DAY
+Notification -[#000000]-> LogEntry : explicit Intent (PendingIntent,\nFLAG_ACTIVITY_NEW_TASK)
+
+Goal -[#888888,dashed]-> Dashboard : up, parentActivityName
+LogEntry -[#888888,dashed]-> Dashboard : up, parentActivityName
+History -[#888888,dashed]-> Dashboard : up, parentActivityName
+WeekDetail -[#888888,dashed]-> History : up, parentActivityName
+
+note right of Dashboard
+  Every non launcher activity declares
+  android:exported="false"; the manifest
+  is the only place a target activity is
+  named, never inferred from a route table.
+end note
+
+note bottom of WeekDetail
+  The extra carries only the week's start
+  date, not the caller's list state, so the
+  two activities stay loosely coupled.
+end note
+
+note left of Dashboard
+  One activity per screen, explicit intents
+  rather than a single activity with a
+  navigation graph, ADR-0002. This runs
+  against current Android practice; accepted
+  because the examination task names several
+  activities as a requirement, which a nav
+  graph inside one activity does not satisfy.
+end note
+
+@enduml

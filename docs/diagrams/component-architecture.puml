@@ -74,8 +74,10 @@ note as N1
   domain imports nothing from //android.*// or //androidx.*//,
   which is what makes every rule in here runnable and testable
   on the plain JVM. Aggregation happens here, in Kotlin, not in
-  a SQL query, ADR-0009, the trade off is reading a week into
-  memory.
+  a SQL query, ADR-0009. The trade off is that the dashboard and
+  the history read the whole entry history, not one week, because
+  DeloadAdvisor judges the current week against the trailing
+  weekly totals.
 end note
 N1 .. domain
 

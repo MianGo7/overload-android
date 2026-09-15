@@ -1,0 +1,89 @@
+@startuml data-model-er
+' Chapter 3, Software design, section 3.2: data model and persistence.
+' Renders with any PlantUML processor, for example
+' https://www.plantuml.com/plantuml or a local toolchain:
+' plantuml docs/diagrams/data-model-er.puml
+' Source of the facts shown here: app/src/main/java/de/miangohar/overload/
+' data/local/entity, .../data/local/dao, .../data/local/Converters.kt,
+' .../data/local/AppDatabase.kt, and docs/decision-log.md ADR-0003, ADR-0009.
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor #F5F5F5
+  BorderColor #444444
+  FontStyle normal
+}
+skinparam note {
+  BackgroundColor #FFFBE6
+  BorderColor #B8A000
+}
+
+title Overload, persisted data model (Room, database version 2)
+
+entity "set_entries" as SetEntries {
+  *id : INTEGER <<PK, autogenerate>>
+  --
+  date_epoch_day : INTEGER
+  exercise_name : TEXT
+  primary_muscle : TEXT
+  secondary_muscles : TEXT
+  sets : INTEGER
+  reps : INTEGER
+  weight_kg : REAL
+  rir : INTEGER <<nullable>>
+}
+
+entity "training_goal" as TrainingGoal {
+  *id : INTEGER <<PK, always 1>>
+  --
+  phase : TEXT
+  block_length_weeks : INTEGER
+  reminder_time : INTEGER <<nullable, added v2>>
+}
+
+entity "volume_targets" as VolumeTargets {
+  *muscle_group : TEXT <<PK>>
+  --
+  min_sets : INTEGER
+  max_sets : INTEGER
+}
+
+TrainingGoal .[#B8A000]. VolumeTargets : "no foreign key: a singleton goal,\ncleared and rewritten with its\ntargets in one transaction"
+
+note bottom of SetEntries
+  No relationship to the other two tables at the schema
+  level. A week's totals are aggregated in Kotlin over
+  plain queries, ADR-0009, not joined or grouped in SQL,
+  so the rule stays unit testable off device.
+end note
+
+note as N1
+  date_epoch_day: LocalDate stored as an epoch day, so
+  rows can be ordered and range queried in SQL.
+  primary_muscle, phase: enums stored by name.
+  secondary_muscles: a Set<MuscleGroup> stored as one
+  comma separated column.
+  All four conversions live in Converters.kt.
+end note
+N1 .. SetEntries
+
+note as N2
+  DAOs return Flow, so a screen observing goal or
+  entries updates itself on every write, no manual
+  refresh call anywhere in the app.
+end note
+N2 .. TrainingGoal
+
+note as N3
+  Room, ADR-0003. Schema exported to app/schemas on
+  every version bump; MIGRATION_1_2 (v1 to v2, adding
+  reminder_time) is verified against the exported v1
+  schema by AppDatabaseMigrationTest rather than
+  written blind. The database itself is excluded from
+  automatic cloud backup, ADR-0008.
+end note
+N3 .. VolumeTargets
+
+@enduml

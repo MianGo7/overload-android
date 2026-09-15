@@ -9,10 +9,10 @@ This repository is the practical part of a project report for the IU course
 DLBCSEMSE02, Mobile Software Engineering II.
 
 - Course: DLBCSEMSE02, Mobile Software Engineering II
-- Task: task 1, individual tracking app
+- Task: Task 1, Individual Tracking App
 - Author: Mian Gohar Ehsan
 - Matriculation number: IU14147184
-- Tutor: Christian Remfert
+- Tutor: Prof. Dr. rer. pol. Christian Remfert
 
 ## What the app does
 

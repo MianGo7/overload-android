@@ -1,0 +1,91 @@
+@startuml component-architecture
+' Chapter 3, Software design, section 3.1: architecture and component
+' interaction. Renders with any PlantUML processor, for example
+' https://www.plantuml.com/plantuml or a local toolchain:
+' plantuml docs/diagrams/component-architecture.puml
+' Source of the facts shown here: docs/decision-log.md ADR-0002, ADR-0004,
+' ADR-0009, and the package structure under app/src/main/java.
+
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam component {
+  BackgroundColor #F5F5F5
+  BorderColor #444444
+}
+skinparam package {
+  BorderColor #888888
+  FontStyle bold
+}
+skinparam interface {
+  BackgroundColor #FFFFFF
+  BorderColor #444444
+}
+skinparam note {
+  BackgroundColor #FFFBE6
+  BorderColor #B8A000
+}
+
+title Overload, component architecture (three layers, one direction of dependency)
+
+package "ui" as ui {
+  component "5 screens\nActivity + Screen + ViewModel\n(Dashboard, Goal, Log entry,\nHistory, Week detail)" as UiScreens
+}
+
+package "reminder" as reminder {
+  component "BootCompletedReceiver\nReminderScheduler\nLoggingReminderWorker" as Reminder
+}
+
+package "domain" as domain {
+  interface "SetEntryRepository" as SetEntryRepo
+  interface "GoalRepository" as GoalRepo
+  component "logic\nVolumeCalculator, ProgressEvaluator,\nDeloadAdvisor, LoggingReminderAdvisor, ..." as Logic
+  component "model\nSetEntry, TrainingGoal, TrainingWeek,\nVolumeTarget, WeeklyProgress, ..." as Models
+  Logic ..> Models
+  SetEntryRepo ..> Models
+  GoalRepo ..> Models
+}
+
+package "data" as data {
+  component "repository\nRoomSetEntryRepository\nRoomGoalRepository" as DataRepo
+  component "local\nAppDatabase, DAOs, Entities\n(Room)" as RoomLocal
+  DataRepo ..> RoomLocal
+}
+
+component "di.AppContainer" as Container
+
+UiScreens ..> Logic
+UiScreens ..> SetEntryRepo
+UiScreens ..> GoalRepo
+UiScreens ..> Container
+
+Reminder ..> Logic
+Reminder ..> SetEntryRepo
+Reminder ..> GoalRepo
+Reminder ..> Container
+
+DataRepo ..|> SetEntryRepo
+DataRepo ..|> GoalRepo
+
+Container ..> DataRepo
+
+note as N1
+  domain imports nothing from //android.*// or //androidx.*//,
+  which is what makes every rule in here runnable and testable
+  on the plain JVM. Aggregation happens here, in Kotlin, not in
+  a SQL query, ADR-0009, the trade off is reading a week into
+  memory.
+end note
+N1 .. domain
+
+note as N2
+  di.AppContainer is hand written, not a framework, ADR-0004.
+  Held by OverloadApplication, read by every view model
+  factory and by the reminder worker; the one place that
+  turns a domain repository interface into a concrete
+  Room one.
+end note
+N2 .. Container
+
+@enduml

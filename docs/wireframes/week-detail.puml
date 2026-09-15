@@ -1,0 +1,16 @@
+@startsalt
+' Wireframe, initial design of the week detail screen.
+{+
+  {* < Back | 29 Dec to 4 Jan }
+  <b>42.0 hard sets logged
+  --
+  {#
+    <b>Muscle group | <b>Sets against range | <b>Status
+    Chest          | 14.0 of 10 to 16      | In range
+    Back           | 16.5 of 12 to 22      | In range
+    Side delts     | 6.0 of 8 to 20        | Below range
+    Biceps         | 9.0 of 8 to 18        | In range
+    "..."          | "..."                 | "..."
+  }
+}
+@endsalt

@@ -1,0 +1,31 @@
+@startsalt
+' Wireframe, initial design of the dashboard screen.
+' Drawn from docs/concept.md before the reminder, the trend chart and the
+' CSV export were added. See README.md for the divergences.
+{+
+  {* This week | Goal | History }
+  "Mon 5 Jan to Sun 11 Jan"
+  ..
+  {+
+    <b>Weekly goal reached: 72 percent
+    "[ | | | | | | | | | | | | | | . . . . . ]"
+    "18.5 hard sets logged"
+    "4,320 kg moved"
+  }
+  {+
+    <b>Accumulation week 4 of 5
+  }
+  --
+  {#
+    <b>Muscle group | <b>Sets against range | <b>Status
+    Chest          | 12.0 of 10 to 16      | In range
+    Back           | 8.5 of 12 to 22       | Below range
+    Side delts     | 14.0 of 8 to 20       | In range
+    Biceps         | 4.0 of 8 to 18        | Below range
+    Quads          | 21.0 of 10 to 20      | Above range
+    "..."          | "..."                 | "..."
+  }
+  --
+  [    Log sets    ]
+}
+@endsalt

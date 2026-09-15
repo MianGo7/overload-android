@@ -1,0 +1,17 @@
+@startsalt
+' Wireframe, initial design of the history screen.
+' The volume trend chart and the CSV export were added later, see README.md.
+{+
+  {* < Back | History }
+  {#
+    <b>Week      | <b>Volume   | <b>Marker
+    Week of 5 Jan  | 44.5 sets | ""
+    Week of 29 Dec | 42.0 sets | ""
+    Week of 22 Dec | 19.5 sets | Deload week
+    Week of 15 Dec | 41.0 sets | ""
+    "..."          | "..."     | ""
+  }
+  ..
+  "Selecting a week opens the week detail screen"
+}
+@endsalt

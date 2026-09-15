@@ -1,0 +1,20 @@
+@startsalt
+' Wireframe, initial design of the entry screen.
+{+
+  {* < Back | Log sets }
+  <b>Date
+  { [ Earlier day ] | "  Mon 5 Jan  " | [ Later day ] }
+  ..
+  "Exercise                                  "
+  ..
+  <b>Trains directly
+  { (X) Chest | ( ) Back | ( ) Quads | ( ) Biceps | ( ) ... }
+  <b>Trains indirectly, counts half
+  { [X] Triceps | [ ] Side delts | [ ] Rear delts | [ ] ... }
+  ..
+  { "Sets   3" | "Reps   10" }
+  { "Weight in kg   60" | "RIR   2" }
+  --
+  [    Save entry    ]
+}
+@endsalt

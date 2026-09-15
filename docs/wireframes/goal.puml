@@ -1,0 +1,26 @@
+@startsalt
+' Wireframe, initial design of the goal screen.
+' The daily reminder row was added later, see README.md.
+{+
+  {* < Back | Weekly goal }
+  <b>Phase
+  { (X) Bulk | ( ) Maintenance | ( ) Cut }
+  ..
+  <b>Accumulation weeks before a deload
+  { [ - ] | "  5  " | [ + ] }
+  ..
+  <b>Weekly set ranges
+  [ Use suggested ranges ]
+  {#
+    <b>Muscle group | <b>Min | <b>Max
+    Chest          | "10"   | "16"
+    Back           | "12"   | "22"
+    Side delts     | "8"    | "20"
+    Rear delts     | "6"    | "16"
+    Biceps         | "8"    | "18"
+    "..."          | "..."  | "..."
+  }
+  --
+  [    Save goal    ]
+}
+@endsalt

@@ -32,10 +32,13 @@ data class DeloadRecommendation(
  * Decides whether a deload week is due.
  *
  * A week counts as a deload when its total volume drops to at most half of the
- * trailing average of the weeks before it, which matches the common practice of
- * halving sets while keeping the load, see ADR-0017. The advisor never looks
- * at calendar gaps, only at logged volume, so a week without any entry is
- * treated as a light week rather than as missing data.
+ * trailing average of the weeks before it, see ADR-0017. Surveyed athletes
+ * report deloading as a drop in overall volume, through fewer sets and fewer
+ * repetitions, while frequency and exercise selection are held and the load
+ * lifted comes down as well; the fraction used here is this project's own
+ * operational choice rather than a figure taken from that work. The advisor
+ * never looks at calendar gaps, only at logged volume, so a week without any
+ * entry is treated as a light week rather than as missing data.
  */
 object DeloadAdvisor {
 

@@ -363,9 +363,13 @@ recommend one that is due, so `DeloadAdvisor` needs its own rule for what a
 deload week looks like from logged volume alone. A week counts as a deload
 when its total falls to at most half of the trailing average of the three
 weeks before it, expressed as `DELOAD_VOLUME_RATIO` and `TRAILING_WEEKS` in
-`DeloadAdvisor`. One half matches the common practice of halving sets for a
-deload; three weeks is enough to smooth over one unusually light or heavy
-week without letting a distant block still weigh on the average.
+`DeloadAdvisor`. One half is an operational choice rather than a figure taken
+from the literature: surveyed strength and physique athletes report deloading
+by reducing overall volume through fewer sets and fewer repetitions, while
+frequency and exercise selection are maintained and the load lifted comes down
+as well, but no canonical fraction is reported. Three weeks is enough to smooth
+over one unusually light or heavy week without letting a distant block still
+weigh on the average.
 
 Rejected: comparing against only the single preceding week, which one
 unusually light or heavy week would throw off; comparing against the whole

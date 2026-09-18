@@ -21,8 +21,8 @@
     <string name="deload_in_progress">This week reads as a deload. Volume is well below your recent average.</string>
     <string name="deload_within_block">Accumulation week %1$d of %2$d.</string>
     <plurals name="deload_due_body">
-        <item quantity="one">%1$d accumulation week in a row. Halve your sets this week and keep the load.</item>
-        <item quantity="other">%1$d accumulation weeks in a row. Halve your sets this week and keep the load.</item>
+        <item quantity="one">%1$d accumulation week in a row. Deload this week: about half the sets, lighter and further from failure.</item>
+        <item quantity="other">%1$d accumulation weeks in a row. Deload this week: about half the sets, lighter and further from failure.</item>
     </plurals>
 
     <!-- Volume status -->
